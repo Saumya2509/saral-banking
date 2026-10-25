@@ -18,10 +18,24 @@ const initialFullState = {
 function loadStoredState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return initialFullState;
+    let activeCustomer = null;
+    try {
+      activeCustomer = sessionStorage.getItem('saral_active_customer');
+    } catch {}
+
+    if (!raw) {
+      return {
+        ...initialFullState,
+        session: { ...sessionSlice.initialState, customerId: activeCustomer },
+      };
+    }
     const parsed = JSON.parse(raw);
     return {
-      session: { ...sessionSlice.initialState, ...parsed.session },
+      session: {
+        ...sessionSlice.initialState,
+        ...parsed.session,
+        customerId: activeCustomer,
+      },
       settings: { ...settingsSlice.initialState, ...parsed.settings },
       pay: { ...paySlice.initialState, ...parsed.pay },
       records: { ...recordsSlice.initialState, ...parsed.records },
@@ -35,9 +49,18 @@ function loadStoredState() {
 
 function rootReducer(state, action) {
   if (action.type === 'RESET_DEMO') {
+    try {
+      sessionStorage.removeItem('saral_active_customer');
+    } catch {}
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('saral.ledgerExtra');
     return initialFullState;
+  }
+
+  if (action.type === 'SIGN_OUT') {
+    try {
+      sessionStorage.removeItem('saral_active_customer');
+    } catch {}
   }
 
   return {

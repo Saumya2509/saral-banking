@@ -2,7 +2,7 @@
 // Manages: logged-in customer, role (customer/guardian), lock state
 
 export const initialState = {
-  customerId: 'shankar',
+  customerId: null,
   role: 'customer', // 'customer' | 'guardian'
   lockedAt: null,
 };
@@ -12,7 +12,14 @@ export function reducer(state, action) {
     case 'SET_CUSTOMER':
       return {
         ...state,
-        customerId: action.payload || 'shankar',
+        customerId: action.payload || null,
+        lockedAt: null,
+      };
+
+    case 'SIGN_OUT':
+      return {
+        ...state,
+        customerId: null,
         lockedAt: null,
       };
 

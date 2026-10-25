@@ -98,6 +98,7 @@ export default function Profile() {
   };
 
   const handleLogout = () => {
+    try { sessionStorage.removeItem('saral_active_customer'); } catch {}
     dispatch({ type: 'SIGN_OUT' });
     navigate('/signin');
   };
@@ -694,3 +695,4 @@ export default function Profile() {
     </Screen>
   );
 }
+

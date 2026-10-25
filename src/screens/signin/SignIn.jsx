@@ -79,6 +79,7 @@ export default function SignIn() {
 
   const processSignIn = (cust) => {
     playSuccessChime();
+    try { sessionStorage.setItem('saral_active_customer', cust.id); } catch {}
     dispatch({ type: 'SET_CUSTOMER', payload: cust.id });
     if (cust.defaultMode) {
       dispatch({ type: 'SET_MODE', payload: cust.defaultMode });
@@ -745,3 +746,4 @@ export default function SignIn() {
     </div>
   );
 }
+

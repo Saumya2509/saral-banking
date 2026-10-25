@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useStore } from '../../store/index.js';
 import config from '../../data/config.js';
 import AiFloatingButton from '../ui/AiFloatingButton.jsx';
@@ -28,13 +28,8 @@ export default function AppShell() {
 
   // Check login session
   useEffect(() => {
-    if (!state?.session?.customerId && location.pathname !== '/signin' && location.pathname !== '/splash') {
-      const hasSeenSplash = sessionStorage.getItem('saral_has_seen_splash');
-      if (!hasSeenSplash) {
-        navigate('/splash', { replace: true });
-      } else {
-        navigate('/signin', { replace: true });
-      }
+    if (!state?.session?.customerId && location.pathname !== '/signin') {
+      navigate('/signin', { replace: true });
     }
   }, [state?.session?.customerId, location.pathname, navigate]);
 
@@ -44,7 +39,11 @@ export default function AppShell() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       idleTimerRef.current = setTimeout(() => {
         if (state?.session?.customerId) {
+          try {
+            sessionStorage.removeItem('saral_active_customer');
+          } catch {}
           dispatch({ type: 'LOCK', payload: new Date().toISOString() });
+          dispatch({ type: 'SIGN_OUT' });
           navigate('/signin');
         }
       }, (config.idleLockSeconds || 120) * 1000);
@@ -59,6 +58,10 @@ export default function AppShell() {
       events.forEach((ev) => window.removeEventListener(ev, resetIdleTimer));
     };
   }, [state?.session?.customerId, dispatch, navigate]);
+
+  if (!state?.session?.customerId) {
+    return <Navigate to="/signin" replace />;
+  }
 
   return (
     <div className="app-shell min-h-screen bg-fintech-mesh text-[var(--text-primary)]">

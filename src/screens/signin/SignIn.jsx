@@ -120,21 +120,23 @@ export default function SignIn() {
   };
 
   const verifyPinSubmission = async (enteredPin) => {
-    const isValid = await checkPin(enteredPin);
+    let isValid = false;
+    try {
+      isValid = await checkPin(enteredPin);
+    } catch (e) {
+      console.warn('PIN check fallback:', e);
+    }
     if (isValid || enteredPin === config.demoPin || enteredPin === '1234') {
       setError('');
       setWrongAttempts(0);
 
-      // Offer biometric enrollment once after successful PIN login
-      let asked = false;
+      // Offer biometric enrollment once after successful PIN login if not already enrolled
+      let dismissed = false;
       try {
-        asked = sessionStorage.getItem(`bioAsked:${selectedCustomer.id}`);
+        dismissed = sessionStorage.getItem(`bioDismissed:${selectedCustomer.id}`) === '1';
       } catch {}
 
-      if (!hasFingerprint(selectedCustomer.id) && !asked) {
-        try {
-          sessionStorage.setItem(`bioAsked:${selectedCustomer.id}`, '1');
-        } catch {}
+      if (!hasFingerprint(selectedCustomer.id) && !dismissed) {
         setPendingCustomer(selectedCustomer);
         setShowEnrollModal(true);
       } else {
@@ -227,6 +229,7 @@ export default function SignIn() {
     setPinValue('');
     setError('');
     setBiometricState('idle');
+    setPendingCustomer(null);
     playTapTone();
   };
 
@@ -738,13 +741,21 @@ export default function SignIn() {
         profile={pendingCustomer || selectedCustomer}
         lang={lang}
         onClose={() => {
+          const target = pendingCustomer || selectedCustomer;
+          try {
+            sessionStorage.setItem(`bioDismissed:${target.id}`, '1');
+          } catch {}
           setShowEnrollModal(false);
-          processSignIn(pendingCustomer || selectedCustomer);
+          processSignIn(target);
         }}
         onEnrolled={() => {
+          const target = pendingCustomer || selectedCustomer;
+          try {
+            sessionStorage.removeItem(`bioDismissed:${target.id}`);
+          } catch {}
           setShowEnrollModal(false);
           setBioRev((r) => r + 1);
-          processSignIn(pendingCustomer || selectedCustomer);
+          processSignIn(target);
         }}
       />
     </div>

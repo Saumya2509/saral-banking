@@ -48,8 +48,11 @@ export default function BiometricEnrollModal({ isOpen, profile, onClose, onEnrol
     setErrorMsg('');
     try {
       await enableFingerprint(profile);
-      if (onEnrolled) onEnrolled();
-      onClose();
+      if (onEnrolled) {
+        onEnrolled();
+      } else if (onClose) {
+        onClose();
+      }
     } catch (err) {
       if (err.code !== 'cancelled') {
         setErrorMsg(t('failed'));

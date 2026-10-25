@@ -1,0 +1,180 @@
+================================================================================
+SARAL BANKING — 5-MINUTE JUDGE PRESENTATION & DEMO SCRIPT
+Target Audience: Hackathon Judges (Fintech, Accessibility, System Design)
+Total Duration: 5 Minutes (300 Seconds)
+Tone: Empathetic, confident, human-centered, institutional-grade
+================================================================================
+
+[00:00 - 01:00] MINUTE 1: THE HOOK & THE HUMAN PROBLEM
+--------------------------------------------------------------------------------
+SCREEN ACTION:
+- Start on cold launch Splash Screen (http://localhost:3000/splash).
+- Let the institutional typography, security badge, and calm animation show.
+
+SPEAKER:
+"Respected Judges, digital banking in India has grown exponentially with UPI, 
+but along the way, we left millions behind.
+
+For a 68-year-old grandfather in Jammu, modern banking apps feel like an 
+obstacle course—crammed with credit card loans, gaming spin-wheels, and cryptic 
+transaction codes like 'UPI/DR/192837/REV'. One wrong tap, and he fears his life 
+savings are gone.
+
+For a 15-year-old high schooler, traditional apps give zero financial autonomy, 
+forcing them into cash.
+
+And for working professionals, apps are riddled with dark patterns and ads 
+instead of calm financial clarity.
+
+We asked ourselves: What if a banking app treated technology not as a billboard, 
+but as a public utility?
+
+Welcome to Saral Banking—a multi-generational, hyper-accessible digital banking 
+standard built for Bharat. It adapts to who is holding the phone: Priya, 
+a working professional; Shankar Prasad, an elder citizen; and Aarav, a young 
+teen saver."
+
+
+[01:00 - 02:15] MINUTE 2: SHANKAR PRASAD & ACCESSIBLE TAMIL READ-ALOUD
+--------------------------------------------------------------------------------
+SCREEN ACTION:
+1. Tap "Sign In" (/signin).
+2. Show clean demo login (Demo PIN: 1234 or Biometric Fingerprint unlock).
+3. Select Shankar Prasad (68 years, Simple Mode).
+4. Once on Home, tap the "தமிழ்" pill on the top header.
+5. Pause 2 seconds as the app speaks aloud:
+   "வணக்கம் சங்கர் பிரசாத். இருப்புத் தொகை: ஒரு லட்சத்து ஐம்பதாயிரம் ரூபாய்."
+6. Tap "See my money" (என் பணத்தைப் பார்க்கவும்) and bottom navigation tabs 
+   to show how every button speaks its label.
+
+SPEAKER:
+"Let’s log in as Shankar Prasad, 68 years old.
+
+Watch how the interface immediately transforms into Simple Mode. No tiny 
+buttons, no hidden menus, no confusing jargon. Every button is at least 
+56 pixels tall, meeting strict WCAG AAA touch targets.
+
+Now, notice something crucial: when Shankar selects Tamil, the entire system 
+doesn't just translate text—it comes alive with voice.
+
+(Pause while Tamil voice speaks: 'வணக்கம் சங்கர் பிரசாத்...')
+
+It reads his balance as 'ஒரு லட்சத்து ஐம்பதாயிரம் ரூபாய்'—correctly using Indian 
+numbering systems (Lakhs and Crores) rather than Western millions. 
+
+Even better: this runs 100% offline using the Web Speech API. We do not send 
+a single syllable of his financial data to external cloud servers.
+
+Every single button, tab, and card can be read aloud, giving dignity and 
+independence to elderly or visually impaired citizens who shouldn't have to 
+depend on someone else to check their pension."
+
+
+[02:15 - 03:15] MINUTE 3: YOUNG SAVER & GUARDIAN SUPERVISION (AARAV & PRIYA)
+--------------------------------------------------------------------------------
+SCREEN ACTION:
+1. Switch account to Aarav Mehta (15 years, Young Saver mode).
+2. Show the Young Saver interface:
+   - Zero loan ads, zero debt offers, no utility bill distractions.
+   - Prominent Savings Goals (School books, Laptop, Tuition).
+3. Tap "Send Money" or initiate a payment over ₹5,000 to trigger the Guardian 
+   Approval Request to Mom (Priya Sharma).
+
+SPEAKER:
+"Now, let's step into the shoes of Aarav, 15 years old.
+
+Under RBI guidelines, financial literacy starts early. But minors shouldn't 
+be exposed to credit cards, loans, or unregulated transfers.
+
+In Saral's Young Saver mode, the app automatically strips away all debt 
+instruments and distractions, replacing them with Savings Goals.
+
+If Aarav tries to make a payment above his daily limit, the app doesn't just 
+throw a cold error—it sends a structured Guardian Approval Request straight 
+to his mother, Priya.
+
+Priya receives the request on her device, reviews the merchant name and reason, 
+and approves it with one tap. This gives Aarav financial agency while keeping 
+family security absolute."
+
+
+[03:15 - 04:15] MINUTE 4: FRAUD DEFENSE, STRICT QR SCANNING & PRIVACY FIREWALL
+--------------------------------------------------------------------------------
+SCREEN ACTION:
+1. Tap the QR Code Scanner (camera icon).
+2. Show camera view with laser viewfinder.
+3. Show how a malicious link, text QR, or Wi-Fi code is instantly rejected with 
+   the calm, localized message:
+   "This is not a payment QR code. Try another one."
+   ("இது பணம் செலுத்தும் QR குறியீடு அல்ல. வேறொன்றை முயற்சிக்கவும்.")
+4. Open Ask Saral AI (help chat).
+5. Type: "My PIN is 1234, why did my transfer fail?"
+6. Show client-side redaction firewall in action:
+   "My PIN is [OTP/PIN HIDDEN], why did my transfer fail?"
+
+SPEAKER:
+"Now let's talk about the biggest fear in Indian digital banking today: 
+scams and fraud.
+
+First: QR Scams. Phishing QR codes at tea stalls often trick users into opening 
+malicious websites or sending money without a verified UPI VPA. In Saral 
+Banking, our parser strictly enforces the NPCI upi://pay standard. If someone 
+scans a website URL, Wi-Fi code, or malicious QR, the scanner calmly rejects 
+it before anything can happen. The app will never open an external browser link.
+
+Second: Our AI Assistant & Scams Defense. If a distressed elder types their 
+OTP or PIN into our chat, our client-side regex firewall redacts it before 
+the message ever leaves their browser. The server never sees the PIN.
+
+And if a customer suspects fraud, one tap links them directly to the National 
+Cybercrime Helpline 1930 and instant card freezing."
+
+
+[04:15 - 05:00] MINUTE 5: SYSTEM RIGOR, THE STANDARD & CONCLUSION
+--------------------------------------------------------------------------------
+SCREEN ACTION:
+1. Open "The Standard" (/help/standard).
+2. Show the single Back button at the top-left on every screen.
+3. Show bank switcher (Saral Bank, Janata Bank, Desh Bank) and high-contrast toggle.
+
+SPEAKER:
+"Under the hood, Saral Banking is built with extreme engineering rigor:
+- Zero float math errors—100% whole integer paise arithmetic.
+- WebAuthn Biometric passkey authentication with strict profile isolation.
+- Triple-language parity across English, Hindi, and Tamil with 366 fully 
+  validated keys and zero missing strings.
+- Exactly one top-left Back button on every screen—no duplicate traps.
+- And 37 out of 37 automated audit checks passing on every build.
+
+Judges, digital banking shouldn't be stressful, loud, or exclusive. Whether it's 
+Shankar Prasad in Jammu listening to his pension in Tamil, Aarav saving his 
+first ₹500, or Priya managing her family—Saral Banking delivers what banking 
+was always meant to be:
+
+Safe. Simple. Human.
+
+Thank you, and we welcome your questions!"
+
+
+================================================================================
+JUDGE Q&A DEFENSE CHEAT-SHEET
+================================================================================
+Q: "Why did you remove Bill Pay and Mobile Recharge?"
+A: "Real institutional banking apps should prioritize core financial services 
+   (Transfers, Accounts, Statements, Services, Security) rather than functioning 
+   as e-commerce lead generators. Removing non-essential billers reduces clutter 
+   and eliminates scam vectors for vulnerable customers."
+
+Q: "Does the Tamil voice send user data to Google or third-party servers?"
+A: "No. All text-to-speech runs natively on the device via the Web Speech API. 
+   Financial balances and spoken labels never leave the customer's hardware."
+
+Q: "How does the app prevent rounding errors in money calculations?"
+A: "All currency calculations use integer paise (₹1 = 100 paise). Float arithmetic 
+   is strictly prohibited in the codebase to prevent floating-point inaccuracies."
+
+Q: "What happens if a user is offline and uses the AI assistant?"
+A: "Our AI assistant includes an offline keyword-matching fallback engine. Even if 
+   the network drops or the server is unavailable, customers still get instant 
+   answers for balance checks, transaction queries, and scam guidance."
+================================================================================

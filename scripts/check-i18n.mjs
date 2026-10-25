@@ -1,20 +1,39 @@
 // scripts/check-i18n.mjs
 import en from '../src/i18n/en.js';
+import hi from '../src/i18n/hi.js';
 import ta from '../src/i18n/ta.js';
 
-console.log('--- Checking Tamil i18n Completeness ---');
+console.log('--- Checking i18n Completeness (en, hi, ta) ---');
 
 const enKeys = Object.keys(en);
+const hiKeys = Object.keys(hi);
 const taKeys = Object.keys(ta);
+
+const missingInHi = enKeys.filter((k) => !(k in hi));
 const missingInTa = enKeys.filter((k) => !(k in ta));
-const extraInTa = taKeys.filter((k) => !(k in en));
 
 console.log(`English keys: ${enKeys.length}`);
+console.log(`Hindi keys:   ${hiKeys.length}`);
 console.log(`Tamil keys:   ${taKeys.length}`);
-console.log(`Missing keys: ${missingInTa.length}`);
+
+let hasErrors = false;
+
+if (missingInHi.length > 0) {
+  console.error('Missing in hi:', missingInHi);
+  hasErrors = true;
+}
 
 if (missingInTa.length > 0) {
   console.error('Missing in ta:', missingInTa);
+  hasErrors = true;
+}
+
+for (const k of taKeys) {
+  const val = typeof ta[k] === 'string' ? ta[k].trim() : '';
+  if (!val) {
+    console.error(`Empty value in ta for key: "${k}"`);
+    hasErrors = true;
+  }
 }
 
 // Check placeholders
@@ -32,13 +51,16 @@ for (const k of enKeys) {
   if (JSON.stringify(enPh) !== JSON.stringify(taPh)) {
     console.error(`Placeholder mismatch in key "${k}": en=${JSON.stringify(enPh)}, ta=${JSON.stringify(taPh)}`);
     placeholderMismatches++;
+    hasErrors = true;
   }
 }
 
+console.log(`Missing in Hindi: ${missingInHi.length}`);
+console.log(`Missing in Tamil: ${missingInTa.length}`);
 console.log(`Placeholder mismatches: ${placeholderMismatches}`);
 
-if (missingInTa.length > 0 || placeholderMismatches > 0) {
+if (hasErrors) {
   process.exit(1);
 } else {
-  console.log('✓ All i18n checks passed cleanly!');
+  console.log('✓ All i18n specification checks passed cleanly!');
 }

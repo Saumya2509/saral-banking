@@ -20,12 +20,19 @@ export default function BigButton({
   ...props
 }) {
   const { state } = useStore();
-  const handleClick = () => {
+  const handleClick = (e) => {
     // Speak label on click if readAloud or simple mode enabled
     if ((state.settings.readAloud || state.settings.mode === 'simple') && typeof children === 'string') {
       speak(children, state.settings.lang || 'en');
     }
-    if (onClick) onClick();
+    if (onClick) onClick(e);
+  };
+
+  const handleFocus = (e) => {
+    if ((state.settings.readAloud || state.settings.mode === 'simple') && typeof children === 'string') {
+      speak(children, state.settings.lang || 'en');
+    }
+    if (props.onFocus) props.onFocus(e);
   };
 
   let baseStyle = {
@@ -82,6 +89,7 @@ export default function BigButton({
       title={disabled ? disabledReason : undefined}
       aria-disabled={disabled}
       onClick={disabled ? undefined : handleClick}
+      onFocus={disabled ? undefined : handleFocus}
       style={{ ...baseStyle, ...variantStyle }}
       className={`interactive-tap focus-visible:ring-2 focus-visible:ring-offset-2 ${className}`}
       {...props}

@@ -9,9 +9,7 @@ export const FEATURES = {
   'home.accountDetails': { standard: 'yes',    simple: 'tucked', young: 'yes' },
   'home.goals':          { standard: 'never',  simple: 'never',  young: 'yes' },
 
-  // Pay & Bills
-  'bills.pay':           { standard: 'yes',    simple: 'yes',    young: 'never' },
-  'bills.recharge':      { standard: 'yes',    simple: 'yes',    young: 'never' },
+  // Pay
   'pay.bankAccount':     { standard: 'yes',    simple: 'tucked', young: 'guardian' },
   'pay.scanQr':          { standard: 'yes',    simple: 'tucked', young: 'yes' },
   'pay.confirmOver5k':   { standard: 'never',  simple: 'yes',    young: 'never' },

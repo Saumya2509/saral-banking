@@ -1016,10 +1016,10 @@ export default function Home() {
                   </span>
                 </button>
 
-                {/* 2. Bill Pay */}
+                {/* 2. Statements / Passbook */}
                 <button
                   type="button"
-                  onClick={() => navigate('/bills')}
+                  onClick={() => navigate('/statements')}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -1044,17 +1044,17 @@ export default function Home() {
                       boxShadow: '0 2px 6px rgba(21, 128, 61, 0.15)',
                     }}
                   >
-                    <ZapIcon size={22} />
+                    <FileTextIcon size={22} />
                   </div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                    {lang === 'hi' ? 'बिल भुगतान' : 'Bill Pay'}
+                    {lang === 'hi' ? 'विवरण' : lang === 'ta' ? 'அறிக்கை' : 'Statements'}
                   </span>
                 </button>
 
-                {/* 3. Recharge */}
+                {/* 3. Services */}
                 <button
                   type="button"
-                  onClick={() => navigate('/bills?cat=mobile')}
+                  onClick={() => navigate('/services')}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -1079,10 +1079,10 @@ export default function Home() {
                       boxShadow: '0 2px 6px rgba(194, 65, 12, 0.15)',
                     }}
                   >
-                    <SmartphoneIcon size={22} />
+                    <ShieldIcon size={22} />
                   </div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                    {lang === 'hi' ? 'रिचार्ज' : 'Recharge'}
+                    {lang === 'hi' ? 'सेवाएं' : lang === 'ta' ? 'சேவைகள்' : 'Services'}
                   </span>
                 </button>
 

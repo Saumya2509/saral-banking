@@ -14,12 +14,17 @@ import {
 import { playSuccessChime, playErrorTone } from '../../utils/audio.js';
 import { useI18n } from '../../i18n/index.js';
 import { formatINR } from '../../utils/money.js';
+import { parseUpiQr } from '../../utils/upi.js';
+export { parseUpiQr };
 
 /**
  * Parses a UPI string or URI into structured payee object
  * Handles: upi://pay?pa=...&pn=...&am=... as well as plain VPAs (e.g. name@upi)
  */
 export function parseUpiString(text) {
+  const strict = parseUpiQr(text);
+  if (strict) return strict;
+
   let payeeName = 'Scanned Merchant';
   let vpa = (text || '').trim();
   let amountPaise = 0;
@@ -71,6 +76,7 @@ export default function QrScanner({ isOpen, onClose, onScanSuccess }) {
 
   const [cameraState, setCameraState] = useState('idle'); // 'idle' | 'requesting' | 'streaming' | 'denied'
   const [errorMessage, setErrorMessage] = useState('');
+  const [qrError, setQrError] = useState('');
   const [manualUpi, setManualUpi] = useState('');
   const [facingMode, setFacingMode] = useState('environment'); // 'environment' | 'user'
   const [lastScanned, setLastScanned] = useState(null);
@@ -243,10 +249,24 @@ export default function QrScanner({ isOpen, onClose, onScanSuccess }) {
   };
 
   const handleQrDetected = (qrValue) => {
+    const parsed = parseUpiQr(qrValue);
+    if (!parsed) {
+      playErrorTone();
+      stopCamera();
+      const msg =
+        lang === 'hi'
+          ? 'यह भुगतान का QR कोड नहीं है। दूसरा आज़माएँ।'
+          : lang === 'ta'
+          ? 'இது பணம் செலுத்தும் QR குறியீடு அல்ல. வேறொன்றை முயற்சிக்கவும்.'
+          : 'This is not a payment QR code. Try another one.';
+      setQrError(msg);
+      return;
+    }
+
+    setQrError('');
     playSuccessChime();
     stopCamera();
 
-    const parsed = parseUpiString(qrValue);
     setLastScanned(parsed);
 
     setTimeout(() => {
@@ -268,8 +288,16 @@ export default function QrScanner({ isOpen, onClose, onScanSuccess }) {
       } catch (e) {}
     }
 
-    // Instant match fallback
-    handleSelectSample(sampleQrs[0]);
+    // If capture frame failed to detect a valid QR
+    playErrorTone();
+    stopCamera();
+    const msg =
+      lang === 'hi'
+        ? 'यह भुगतान का QR कोड नहीं है। दूसरा आज़माएँ।'
+        : lang === 'ta'
+        ? 'இது பணம் செலுத்தும் QR குறியீடு அல்ல. வேறொன்றை முயற்சிக்கவும்.'
+        : 'This is not a payment QR code. Try another one.';
+    setQrError(msg);
   };
 
   const handleFileUpload = async (e) => {
@@ -290,8 +318,16 @@ export default function QrScanner({ isOpen, onClose, onScanSuccess }) {
       }
     }
 
-    // Fallback on image upload
-    handleSelectSample(sampleQrs[0]);
+    // Rejected upload
+    playErrorTone();
+    stopCamera();
+    const msg =
+      lang === 'hi'
+        ? 'यह भुगतान का QR कोड नहीं है। दूसरा आज़माएँ।'
+        : lang === 'ta'
+        ? 'இது பணம் செலுத்தும் QR குறியீடு அல்ல. வேறொன்றை முயற்சிக்கவும்.'
+        : 'This is not a payment QR code. Try another one.';
+    setQrError(msg);
   };
 
   const handleSelectSample = (sample) => {
@@ -327,8 +363,46 @@ export default function QrScanner({ isOpen, onClose, onScanSuccess }) {
     <Sheet
       isOpen={isOpen}
       onClose={onClose}
-      title={lang === 'hi' ? 'QR कोड स्कैन या UPI ID' : 'Scan QR Code or Enter UPI ID'}
+      title={lang === 'hi' ? 'QR कोड स्कैन या UPI ID' : lang === 'ta' ? 'QR குறியீட்டை ஸ்கேன் செய்க' : 'Scan QR Code or Enter UPI ID'}
     >
+      {/* Rejected QR Calm Notification per change.md §4 */}
+      {qrError && (
+        <div
+          style={{
+            padding: '14px 16px',
+            backgroundColor: '#fef2f2',
+            border: '1.5px solid #f87171',
+            borderRadius: '12px',
+            textAlign: 'center',
+            marginBottom: '14px',
+          }}
+        >
+          <div style={{ color: '#b91c1c', fontWeight: 600, fontSize: '0.9375rem', marginBottom: '10px' }}>
+            {qrError}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setQrError('');
+              startCamera();
+            }}
+            style={{
+              backgroundColor: 'var(--brand)',
+              color: '#ffffff',
+              border: 'none',
+              padding: '6px 18px',
+              borderRadius: '8px',
+              fontWeight: 700,
+              fontSize: '0.8125rem',
+              cursor: 'pointer',
+            }}
+            className="interactive-tap"
+          >
+            {lang === 'hi' ? 'दूसरा आज़माएँ' : lang === 'ta' ? 'வேறொன்றை முயற்சிக்கவும்' : 'Try another one'}
+          </button>
+        </div>
+      )}
+
       {/* 1. Camera Viewport / Request Box */}
       <div
         style={{

@@ -76,33 +76,8 @@ export default function Accounts() {
   };
 
   return (
-    <Screen title={lang === 'hi' ? 'खाते' : 'Accounts'} showBack={true} onBack={() => navigate('/')}>
+    <Screen title={lang === 'hi' ? 'खाते' : lang === 'ta' ? 'கணக்குகள்' : 'Accounts'} showBack={true} onBack={() => navigate('/')}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {/* Prominent Back Button for all users (Dada, Mom, Young) */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: 'var(--surface)',
-              border: '1.5px solid var(--border)',
-              padding: '8px 16px',
-              borderRadius: '12px',
-              color: 'var(--brand)',
-              fontWeight: 700,
-              fontSize: '0.875rem',
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
-            }}
-            className="interactive-tap"
-          >
-            <span>←</span>
-            <span>{lang === 'hi' ? 'होम पर वापस जाएँ' : 'Back to Home'}</span>
-          </button>
-        </div>
         {/* 1. Primary Savings Account Card (matches Screen 4 in mockup) */}
         <div
           onClick={() => navigate('/statements')}

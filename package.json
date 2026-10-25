@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "test": "node scripts/test-voice.js && node scripts/test-biometric.js && node scripts/check-i18n.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "test:bio": "node scripts/test-biometric.js",
     "test:live": "node scripts/test-live-server.js",
     "build": "vite build",

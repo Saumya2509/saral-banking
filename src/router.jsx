@@ -9,7 +9,6 @@ import SignIn from './screens/signin/SignIn';
 import Home from './screens/home/Home';
 import Accounts from './screens/accounts/Accounts';
 import Cards from './screens/cards/Cards';
-import BillPay from './screens/bills/BillPay';
 import Settings from './screens/settings/Settings';
 import Standard from './screens/standard/Standard';
 import Profile from './screens/profile/Profile';
@@ -57,7 +56,6 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'accounts', element: <Accounts /> },
       { path: 'cards', element: <Cards /> },
-      { path: 'bills', element: <BillPay /> },
       { path: 'profile', element: <Profile /> },
       { path: 'settings', element: <Settings /> },
       { path: 'help/standard', element: <Standard /> },

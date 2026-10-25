@@ -12,7 +12,7 @@ import { ChevronRightIcon } from '../../components/icons/Icons';
 import { useStore } from '../../store/index.js';
 import { useI18n } from '../../i18n/index.js';
 import { hasFingerprint, removeFingerprint, enableFingerprint } from '../../biometric/index.js';
-import { speak } from '../../utils/speech.js';
+import { speak, hasVoice } from '../../utils/speech.js';
 import { amountToSpeech } from '../../utils/money.js';
 import { getBalances } from '../../utils/ledger.js';
 
@@ -157,6 +157,13 @@ export default function Settings() {
           label={t('core.settings.readAloud') || 'Read aloud enabled'}
           checked={state.settings.readAloud}
           onChange={(val) => dispatch({ type: 'SET_READ_ALOUD', payload: val })}
+        />
+        {state.settings.lang === 'ta' && !hasVoice('ta') && (
+          <div style={{ fontSize: '0.75rem', color: '#b45309', padding: '0 4px 6px 4px' }}>
+            Tamil voice not installed on this device. Add it in your phone's text-to-speech settings.
+          </div>
+        )}
+        <span style={{ display: 'none' }}
         />
         <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '8px 0' }} />
         <Toggle

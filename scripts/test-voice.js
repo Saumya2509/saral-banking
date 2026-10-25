@@ -7,6 +7,7 @@ import { keywordAnswer } from '../src/utils/chat.js';
 import { toTamilWords, amountToTamilSpeech } from '../src/i18n/tamilNumber.js';
 import { amountToSpeech } from '../src/utils/money.js';
 import { findVoice } from '../src/utils/speech.js';
+import { parseUpiQr } from '../src/utils/upi.js';
 
 console.log('--- Starting voice.md Verification Tests ---');
 
@@ -149,6 +150,27 @@ console.log('--- Starting voice.md Verification Tests ---');
   assert.strictEqual(amountToSpeech(50000, 'ta'), 'ஐந்நூறு ரூபாய்');
   assert.strictEqual(amountToSpeech(0, 'ta'), 'பூஜ்ஜியம் ரூபாய்');
   console.log('✓ Shankar Prasad opening balance in Tamil verified');
+  {
+    const realQr = 'upi://pay?pa=sharma.med@upi&pn=Sharma%20Medical%20Hall&am=450.00&cu=INR';
+    const resReal = parseUpiQr(realQr);
+    assert(resReal !== null, 'Real UPI QR must be accepted');
+    assert.strictEqual(resReal.name, 'Sharma Medical Hall');
+    assert.strictEqual(resReal.accountNumber, 'sharma.med@upi');
+    assert.strictEqual(resReal.amountPaise, 45000);
+
+    const noAmt = 'upi://pay?pa=ramesh@oksbi&pn=Ramesh%20Kumar';
+    const resNoAmt = parseUpiQr(noAmt);
+    assert(resNoAmt !== null, 'UPI QR without amount must be accepted');
+    assert.strictEqual(resNoAmt.name, 'Ramesh Kumar');
+    assert.strictEqual(resNoAmt.amountPaise, undefined);
+
+    assert.strictEqual(parseUpiQr('https://saralbank.in/pay'), null);
+    assert.strictEqual(parseUpiQr('Hello world 123'), null);
+    assert.strictEqual(parseUpiQr('upi://pay?pn=Ramesh&am=500'), null);
+    assert.strictEqual(parseUpiQr('upi://pay?pa=invalid-vpa&pn=Ramesh'), null);
+    assert.strictEqual(parseUpiQr('upi://pay?pa=ramesh@upi&pn=Ramesh&cu=USD'), null);
+    console.log('✓ Strict payment QR code verification passed (§4 of change.md)');
+  }
   console.log('✓ Tamil currency words matching Section 7 passed for all milestones');
 }
 

@@ -8,9 +8,12 @@ import {
   GridIcon,
 } from '../icons/Icons';
 import { useI18n } from '../../i18n/index.js';
+import { useStore } from '../../store/index.js';
+import { speak } from '../../utils/speech.js';
 
 export default function TabBar() {
   const { lang, t } = useI18n();
+  const { state } = useStore();
 
   const tabs = [
     { to: '/', label: t('core.tab.home') || (lang === 'hi' ? 'होम' : lang === 'ta' ? 'முகப்பு' : 'Home'), icon: HomeIcon, end: true },
@@ -49,6 +52,11 @@ export default function TabBar() {
             to={tab.to}
             end={tab.end}
             className="interactive-tap"
+            onClick={() => {
+              if (state.settings.readAloud || state.settings.mode === 'simple') {
+                speak(tab.label, lang);
+              }
+            }}
             style={({ isActive }) => ({
               display: 'flex',
               flexDirection: 'column',

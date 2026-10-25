@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../../store/index.js';
 import config from '../../data/config.js';
+import AiFloatingButton from '../ui/AiFloatingButton.jsx';
 
 export default function AppShell() {
   const { state, dispatch } = useStore();
@@ -62,6 +63,7 @@ export default function AppShell() {
   return (
     <div className="app-shell min-h-screen bg-fintech-mesh text-[var(--text-primary)]">
       <Outlet />
+      <AiFloatingButton />
     </div>
   );
 }

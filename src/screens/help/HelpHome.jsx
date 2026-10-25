@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Screen from '../../components/shell/Screen';
 import ListRow from '../../components/ui/ListRow';
+import SaralAiLogo from '../../components/ui/SaralAiLogo';
 import { MessageCircleIcon, BookIcon, ShieldIcon, FileTextIcon } from '../../components/icons/Icons';
 import { useT } from '../../i18n/index.js';
 
@@ -20,7 +21,7 @@ export default function HelpHome() {
         }}
       >
         <ListRow
-          icon={<MessageCircleIcon size={24} className="text-blue-600" />}
+          icon={<SaralAiLogo size={24} animated />}
           title={t('rec.help.askQuestion') || 'Ask a question'}
           subtitle="Get clear answers to any banking or app questions"
           chevron

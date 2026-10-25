@@ -4,7 +4,7 @@
 const customers = [
   {
     id: 'shankar',
-    name: { en: 'Shankar Prasad', hi: 'शंकर प्रसाद' },
+    name: { en: 'Shankar Prasad', hi: 'शंकर प्रसाद', ta: 'சங்கர் பிரசாத்' },
     age: 68,
     isMinor: false,
     guardianId: null,
@@ -13,14 +13,14 @@ const customers = [
     openingBalancePaise: 15000000, // ₹1,50,000
     accountNumber: '2048 1023 4821',
     ifsc: 'SBNK0001234',
-    branch: { en: 'MG Road, Jammu', hi: 'एमजी रोड, जम्मू' },
+    branch: { en: 'MG Road, Jammu', hi: 'एमजी रोड, जम्मू', ta: 'எம்.ஜி. ரோடு, ஜம்மு' },
     mobile: '98765 43210',
     email: 'shankar@example.com',
     dailyLimitPaise: null,
   },
   {
     id: 'priya',
-    name: { en: 'Priya Sharma', hi: 'प्रिया शर्मा' },
+    name: { en: 'Priya Sharma', hi: 'प्रिया शर्मा', ta: 'பிரியா சர்மா' },
     age: 32,
     isMinor: false,
     guardianId: null,
@@ -29,14 +29,14 @@ const customers = [
     openingBalancePaise: 25000000, // ₹2,50,000
     accountNumber: '3072 5610 9384',
     ifsc: 'SBNK0005678',
-    branch: { en: 'Residency Road, Jammu', hi: 'रेसिडेंसी रोड, जम्मू' },
+    branch: { en: 'Residency Road, Jammu', hi: 'रेसिडेंसी रोड, जम्मू', ta: 'ரெசிடென்சி ரோடு, ஜம்மு' },
     mobile: '91234 56789',
     email: 'priya.sharma@example.com',
     dailyLimitPaise: null,
   },
   {
     id: 'aarav',
-    name: { en: 'Aarav Mehta', hi: 'आरव मेहता' },
+    name: { en: 'Aarav Mehta', hi: 'आरव मेहता', ta: 'ஆரவ் மேத்தா' },
     age: 15,
     isMinor: true,
     guardianId: 'priya',
@@ -45,7 +45,7 @@ const customers = [
     openingBalancePaise: 5000000, // ₹50,000
     accountNumber: '1035 7782 6150',
     ifsc: 'SBNK0001234',
-    branch: { en: 'MG Road, Jammu', hi: 'एमजी रोड, जम्मू' },
+    branch: { en: 'MG Road, Jammu', hi: 'एमजी रोड, जम्मू', ta: 'எம்.ஜி. ரோடு, ஜம்மு' },
     mobile: '99887 76655',
     email: null,
     dailyLimitPaise: 100000, // ₹1,000
@@ -56,7 +56,7 @@ const customers = [
 const guardians = [
   {
     id: 'priya',
-    name: { en: 'Priya Sharma (Mom)', hi: 'प्रिया शर्मा (माँ)' },
+    name: { en: 'Priya Sharma (Mom)', hi: 'प्रिया शर्मा (माँ)', ta: 'பிரியா சர்மா (தாய்)' },
     childId: 'aarav',
     mobile: '91234 56789',
   },

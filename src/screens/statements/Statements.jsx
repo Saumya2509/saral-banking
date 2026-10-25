@@ -145,24 +145,24 @@ export default function Statements() {
         value={period}
         onChange={setPeriod}
         options={[
-          { value: 'all', label: lang === 'hi' ? 'सभी' : 'All' },
-          { value: '1m', label: lang === 'hi' ? '1 माह' : '1 Month' },
-          { value: '3m', label: lang === 'hi' ? '3 माह' : '3 Months' },
-          { value: '6m', label: lang === 'hi' ? '6 माह' : '6 Months' },
-          { value: 'custom', label: lang === 'hi' ? 'कस्टम' : 'Custom' },
+          { value: 'all', label: lang === 'hi' ? 'सभी' : lang === 'ta' ? 'அனைத்தும்' : 'All' },
+          { value: '1m', label: lang === 'hi' ? '1 माह' : lang === 'ta' ? '1 மாதம்' : '1 Month' },
+          { value: '3m', label: lang === 'hi' ? '3 माह' : lang === 'ta' ? '3 மாதங்கள்' : '3 Months' },
+          { value: '6m', label: lang === 'hi' ? '6 माह' : lang === 'ta' ? '6 மாதங்கள்' : '6 Months' },
+          { value: 'custom', label: lang === 'hi' ? 'कस्टम' : lang === 'ta' ? 'விருப்பத் தேதி' : 'Custom' },
         ]}
       />
 
       {period === 'custom' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
           <Field
-            label={lang === 'hi' ? 'प्रारंभ तिथि' : 'From date'}
+            label={lang === 'hi' ? 'प्रारंभ तिथि' : lang === 'ta' ? 'தொடக்கத் தேதி' : 'From date'}
             type="date"
             value={customFrom}
             onChange={(e) => setCustomFrom(e.target.value)}
           />
           <Field
-            label={lang === 'hi' ? 'अंतिम तिथि' : 'To date'}
+            label={lang === 'hi' ? 'अंतिम तिथि' : lang === 'ta' ? 'முடிவுத் தேதி' : 'To date'}
             type="date"
             value={customTo}
             onChange={(e) => setCustomTo(e.target.value)}
@@ -171,13 +171,15 @@ export default function Statements() {
       )}
 
       {/* Statement Summary Card */}
-      <Card heading={lang === 'hi' ? 'स्टेटमेंट सारांश' : 'Statement Summary'}>
+      <Card heading={lang === 'hi' ? 'स्टेटमेंट सारांश' : lang === 'ta' ? 'கணக்கு அறிக்கை சுருக்கம்' : 'Statement Summary'}>
         <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
           {bank.name[lang] || bank.name.en} · A/C {customer.accountNumber}
           <br />
           {period === 'all'
             ? lang === 'hi'
               ? 'अवधि: खाता निर्माण से आज तक (सम्पूर्ण इतिहास)'
+              : lang === 'ta'
+              ? 'காலம்: கணக்கு தொடங்கியது முதல் இன்று வரை (முழு வரலாறு)'
               : 'Period: Account opening to date (All History)'
             : `Period: ${formatDate(fromDateStr, lang)} to ${formatDate(toDateStr, lang)}`}
         </div>
@@ -185,7 +187,7 @@ export default function Statements() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px' }}>
           <div style={{ backgroundColor: 'var(--surface-alt)', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              {lang === 'hi' ? 'आरंभिक शेष' : 'Opening balance'}
+              {lang === 'hi' ? 'आरंभिक शेष' : lang === 'ta' ? 'தொடக்க இருப்பு' : 'Opening balance'}
             </div>
             <div style={{ marginTop: '2px', fontWeight: 700 }}>
               <Amount paise={summary.openingPaise} />
@@ -194,7 +196,7 @@ export default function Statements() {
 
           <div style={{ backgroundColor: 'var(--surface-alt)', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              {lang === 'hi' ? 'अंतिम शेष' : 'Closing balance'}
+              {lang === 'hi' ? 'अंतिम शेष' : lang === 'ta' ? 'முடிவு இருப்பு' : 'Closing balance'}
             </div>
             <div style={{ marginTop: '2px', fontWeight: 700 }}>
               <Amount paise={summary.closingPaise} />
@@ -203,7 +205,7 @@ export default function Statements() {
 
           <div style={{ backgroundColor: 'var(--surface-alt)', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              {lang === 'hi' ? 'कुल प्राप्त राशि (In)' : 'Total Received (In)'}
+              {lang === 'hi' ? 'कुल प्राप्त राशि (In)' : lang === 'ta' ? 'மொத்த வரவு (In)' : 'Total Received (In)'}
             </div>
             <div style={{ marginTop: '2px', fontWeight: 700, color: '#059669' }}>
               <Amount paise={summary.inPaise} direction="in" />
@@ -212,7 +214,7 @@ export default function Statements() {
 
           <div style={{ backgroundColor: 'var(--surface-alt)', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              {lang === 'hi' ? 'कुल खर्च राशि (Out)' : 'Total Spent (Out)'}
+              {lang === 'hi' ? 'कुल खर्च राशि (Out)' : lang === 'ta' ? 'மொத்த செலவு (Out)' : 'Total Spent (Out)'}
             </div>
             <div style={{ marginTop: '2px', fontWeight: 700, color: 'var(--danger)' }}>
               <Amount paise={summary.outPaise} direction="out" />
@@ -222,7 +224,7 @@ export default function Statements() {
 
         <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--brand)' }}>
           ✓ {summary.transactions.length}{' '}
-          {lang === 'hi' ? 'लेन-देन इस अवधि में' : 'transactions in this statement'}
+          {lang === 'hi' ? 'लेन-देन इस अवधि में' : lang === 'ta' ? 'பரிவர்த்தனைகள் இந்த அறிக்கையில்' : 'transactions in this statement'}
         </div>
       </Card>
 
@@ -232,10 +234,12 @@ export default function Statements() {
           <h2 style={{ fontSize: '1.0625rem', fontWeight: 700, margin: 0 }}>
             {lang === 'hi'
               ? `स्टेटमेंट इतिहास सूची (${summary.transactions.length})`
+              : lang === 'ta'
+              ? `அறிக்கை பரிவர்த்தனைகள் (${summary.transactions.length})`
               : `Statement History Entries (${summary.transactions.length})`}
           </h2>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-            {lang === 'hi' ? 'नवीनतम पहले' : 'Newest first'}
+            {lang === 'hi' ? 'नवीनतम पहले' : lang === 'ta' ? 'புதியவை முதலில்' : 'Newest first'}
           </span>
         </div>
 

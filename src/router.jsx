@@ -100,6 +100,7 @@ const router = createBrowserRouter([
       { path: 'help', element: <HelpHome /> },
       { path: 'help/chat', element: <HelpChat /> },
       { path: 'help/fraud', element: <ReportFraud /> },
+      { path: 'help/report-fraud', element: <ReportFraud /> },
     ],
   },
 ]);

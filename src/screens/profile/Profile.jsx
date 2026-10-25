@@ -28,6 +28,7 @@ import {
   maskAccountNumber,
 } from '../../data/customers.js';
 import { getBalances, addTransaction } from '../../utils/ledger.js';
+import { hasFingerprint, removeFingerprint, enableFingerprint } from '../../biometric/index.js';
 import { useStore } from '../../store/index.js';
 import { useI18n } from '../../i18n/index.js';
 import { playSuccessChime } from '../../utils/audio.js';
@@ -80,6 +81,21 @@ export default function Profile() {
   const allCustomers = getAllCustomers();
   const customerName = customer.name?.[lang] || customer.name?.en || 'Customer';
   const initial = (customerName || 'U').charAt(0).toUpperCase();
+
+  const [bioOn, setBioOn] = useState(() => hasFingerprint(customerId));
+  const handleToggleBiometric = async () => {
+    if (bioOn) {
+      removeFingerprint(customerId);
+      setBioOn(false);
+    } else {
+      try {
+        await enableFingerprint(customer);
+        setBioOn(true);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   const handleLogout = () => {
     dispatch({ type: 'SIGN_OUT' });
@@ -179,6 +195,16 @@ export default function Profile() {
       subtitle: 'Manage Limits & Block Cards',
       icon: '💳',
       onClick: () => navigate('/cards'),
+    },
+    {
+      id: 'biometric',
+      title: lang === 'hi' ? 'फ़िंगरप्रिंट अनलॉक' : lang === 'ta' ? 'கைரேகை மூலம் திறத்தல்' : 'Fingerprint Unlock',
+      subtitle: bioOn
+        ? (lang === 'hi' ? 'सक्रिय · बंद करने के लिए टैप करें' : lang === 'ta' ? 'இயங்குகிறது · நிறுத்த தட்டவும்' : 'Active · Tap to turn off')
+        : (lang === 'hi' ? 'निष्क्रिय · चालू करने के लिए टैप करें' : lang === 'ta' ? 'முடக்கப்பட்டுள்ளது · இயக்க தட்டவும்' : 'Inactive · Tap to enable'),
+      badge: bioOn ? (lang === 'hi' ? 'चालू' : lang === 'ta' ? 'இயக்கத்தில்' : 'Active') : null,
+      icon: '🔒',
+      onClick: handleToggleBiometric,
     },
     {
       id: 'settings',
@@ -387,7 +413,7 @@ export default function Profile() {
             }}
             className="interactive-tap"
           >
-            <span>{lang === 'hi' ? 'लॉग आउट' : 'Logout'}</span>
+            <span>{lang === 'hi' ? 'लॉग आउट' : lang === 'ta' ? 'வெளியேறு' : 'Logout'}</span>
           </button>
         </div>
       )}

@@ -4,8 +4,9 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import en from './en.js';
 import hi from './hi.js';
+import ta from './ta.js';
 
-export const translations = { en, hi };
+export const translations = { en, hi, ta };
 
 export const I18nContext = createContext({
   lang: 'en',
@@ -42,7 +43,7 @@ export function translate(lang, key, params) {
  * I18nProvider component wrapping the app shell
  */
 export function I18nProvider({ lang = 'en', children }) {
-  const currentLang = lang === 'hi' ? 'hi' : 'en';
+  const currentLang = translations[lang] ? lang : 'en';
 
   const t = useMemo(() => {
     return (key, params) => {
@@ -94,5 +95,5 @@ export function useI18n() {
   return context;
 }
 
-export { en, hi };
+export { en, hi, ta };
 export default I18nContext;

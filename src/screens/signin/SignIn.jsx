@@ -12,11 +12,17 @@ import { useStore } from '../../store/index.js';
 import { useI18n } from '../../i18n/index.js';
 import { playSuccessChime, playErrorTone, playTapTone } from '../../utils/audio.js';
 import { checkPin } from '../../auth.js';
+import {
+  fingerprintSupported,
+  hasFingerprint,
+  unlockWithFingerprint,
+  BiometricEnrollModal,
+} from '../../biometric/index.js';
 
 export default function SignIn() {
   const navigate = useNavigate();
   const { state, dispatch } = useStore();
-  const { lang } = useI18n();
+  const { lang, t } = useI18n();
 
   const allCustomers = getAllCustomers();
   const [selectedCustomerId, setSelectedCustomerId] = useState(
@@ -28,8 +34,17 @@ export default function SignIn() {
   const [lockCountdown, setLockCountdown] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
   const [biometricState, setBiometricState] = useState('idle'); // 'idle' | 'scanning' | 'verified' | 'failed'
+  const [isSupported, setIsSupported] = useState(false);
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [pendingCustomer, setPendingCustomer] = useState(null);
+  const [bioRev, setBioRev] = useState(0); // revision trigger to force re-evaluation of hasFingerprint
 
   const selectedCustomer = allCustomers.find((c) => c.id === selectedCustomerId) || allCustomers[0];
+  const isEnrolled = hasFingerprint(selectedCustomerId);
+
+  useEffect(() => {
+    fingerprintSupported().then(setIsSupported);
+  }, [bioRev]);
 
   // Auto-countdown timer for 30s lock after 3 failed attempts
   useEffect(() => {
@@ -107,7 +122,22 @@ export default function SignIn() {
     if (isValid || enteredPin === config.demoPin || enteredPin === '1234') {
       setError('');
       setWrongAttempts(0);
-      processSignIn(selectedCustomer);
+
+      // Offer biometric enrollment once after successful PIN login
+      let asked = false;
+      try {
+        asked = sessionStorage.getItem(`bioAsked:${selectedCustomer.id}`);
+      } catch {}
+
+      if (!hasFingerprint(selectedCustomer.id) && !asked) {
+        try {
+          sessionStorage.setItem(`bioAsked:${selectedCustomer.id}`, '1');
+        } catch {}
+        setPendingCustomer(selectedCustomer);
+        setShowEnrollModal(true);
+      } else {
+        processSignIn(selectedCustomer);
+      }
     } else {
       playErrorTone();
       setIsShaking(true);
@@ -122,12 +152,16 @@ export default function SignIn() {
         setError(
           lang === 'hi'
             ? '3 गलत प्रयास। कृपया 30 सेकंड प्रतीक्षा करें।'
+            : lang === 'ta'
+            ? '3 தவறான முயற்சிகள். 30 வினாடிகள் காத்திருக்கவும்.'
             : '3 wrong attempts. Locked for 30s.'
         );
       } else {
         setError(
           lang === 'hi'
             ? 'गलत PIN। कृपया 1234 दर्ज करें।'
+            : lang === 'ta'
+            ? 'தவறான PIN. மாதிரிக்கு 1234 உள்ளிடவும்.'
             : 'Incorrect PIN. Try 1234 for demo.'
         );
       }
@@ -135,20 +169,55 @@ export default function SignIn() {
   };
 
   // Professional biometric fingerprint handler
-  const handleFingerprintScan = () => {
+  const handleFingerprintScan = async () => {
     if (lockCountdown > 0 || biometricState !== 'idle') return;
+
+    if (!isSupported) {
+      setError(
+        lang === 'hi'
+          ? 'इस डिवाइस पर फ़िंगरप्रिंट उपलब्ध नहीं है।'
+          : lang === 'ta'
+          ? 'இந்தச் சாதனத்தில் கைரேகை கிடைக்கவில்லை.'
+          : 'Fingerprint is not available on this device.'
+      );
+      return;
+    }
+
+    if (!isEnrolled) {
+      setError(
+        lang === 'hi'
+          ? 'चालू करने के लिए एक बार पिन से लॉगिन करें।'
+          : lang === 'ta'
+          ? 'முதலில் ரகசிய எண் (PIN) மூலம் உள்நுழைந்து இயக்குங்கள்.'
+          : 'Log in with PIN once to turn on fingerprint.'
+      );
+      return;
+    }
 
     playTapTone();
     setBiometricState('scanning');
 
-    setTimeout(() => {
+    try {
+      await unlockWithFingerprint(selectedCustomer);
       setBiometricState('verified');
       playSuccessChime();
 
       setTimeout(() => {
         processSignIn(selectedCustomer);
-      }, 700);
-    }, 900);
+      }, 600);
+    } catch (err) {
+      playErrorTone();
+      setBiometricState('idle');
+      if (err.code !== 'cancelled') {
+        setError(
+          lang === 'hi'
+            ? 'फ़िंगरप्रिंट काम नहीं किया। अपना पिन उपयोग करें।'
+            : lang === 'ta'
+            ? 'கைரேகை வேலை செய்யவில்லை. உங்கள் ரகசிய எண்ணை (PIN) பயன்படுத்துங்கள்.'
+            : 'Fingerprint did not work. Use your PIN.'
+        );
+      }
+    }
   };
 
   const handleSelectCustomer = (cust) => {
@@ -206,7 +275,7 @@ export default function SignIn() {
           title="Replay intro animation"
         >
           <span>←</span>
-          <span>{lang === 'hi' ? 'एनिमेशन देखें' : 'Intro'}</span>
+          <span>{lang === 'hi' ? 'एनिमेशन देखें' : lang === 'ta' ? 'அறிமுகம்' : 'Intro'}</span>
         </button>
 
         {/* Language switch */}
@@ -253,6 +322,23 @@ export default function SignIn() {
           >
             हिंदी
           </button>
+          <button
+            type="button"
+            onClick={() => dispatch({ type: 'SET_LANG', payload: 'ta' })}
+            style={{
+              padding: '3px 10px',
+              borderRadius: '8px',
+              border: 'none',
+              backgroundColor: lang === 'ta' ? '#ffffff' : 'transparent',
+              color: lang === 'ta' ? 'var(--brand)' : '#64748b',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: lang === 'ta' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+            }}
+          >
+            தமிழ்
+          </button>
         </div>
       </div>
 
@@ -260,10 +346,10 @@ export default function SignIn() {
       <div style={{ width: '100%', marginBottom: '18px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
           <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            {lang === 'hi' ? 'खाता चुनें' : 'Select Customer Account'}
+            {lang === 'hi' ? 'खाता चुनें' : lang === 'ta' ? 'கணக்கைத் தேர்ந்தெடுக்கவும்' : 'Select Customer Account'}
           </span>
           <span style={{ fontSize: '0.6875rem', color: '#16a34a', fontWeight: 700, backgroundColor: '#dcfce7', padding: '2px 8px', borderRadius: '8px' }}>
-            Demo PIN: 1234
+            {lang === 'hi' ? 'डेमो पिन: 1234' : lang === 'ta' ? 'மாதிரி PIN: 1234' : 'Demo PIN: 1234'}
           </span>
         </div>
 
@@ -274,10 +360,22 @@ export default function SignIn() {
             const initial = name.charAt(0);
             const roleBadge =
               c.id === 'aarav'
-                ? { label: 'Young Saver (15y)', bg: '#fef3c7', color: '#b45309' }
+                ? {
+                    label: lang === 'hi' ? 'यंग सेवर (15 वर्ष)' : lang === 'ta' ? 'இளைய சேமிப்பாளர் (15 வயது)' : 'Young Saver (15y)',
+                    bg: '#fef3c7',
+                    color: '#b45309'
+                  }
                 : c.id === 'priya'
-                ? { label: 'Standard (32y)', bg: '#dbeafe', color: '#1d4ed8' }
-                : { label: 'Simple (68y)', bg: '#dcfce7', color: '#15803d' };
+                ? {
+                    label: lang === 'hi' ? 'साधारण (32 वर्ष)' : lang === 'ta' ? 'வழக்கமான முறை (32 வயது)' : 'Standard (32y)',
+                    bg: '#dbeafe',
+                    color: '#1d4ed8'
+                  }
+                : {
+                    label: lang === 'hi' ? 'सरल मोड (68 वर्ष)' : lang === 'ta' ? 'எளிய முறை (68 வயது)' : 'Simple (68y)',
+                    bg: '#dcfce7',
+                    color: '#15803d'
+                  };
 
             return (
               <div
@@ -322,7 +420,7 @@ export default function SignIn() {
                     {name}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    A/C: {c.accountNumber ? `•••• ${c.accountNumber.slice(-4)}` : '•••• 4589'}
+                    {lang === 'hi' ? 'खाता:' : lang === 'ta' ? 'கணக்கு:' : 'A/C:'} {c.accountNumber ? `•••• ${c.accountNumber.slice(-4)}` : '•••• 4589'}
                   </div>
                 </div>
 
@@ -370,7 +468,7 @@ export default function SignIn() {
         }}
       >
         <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '10px' }}>
-          {lang === 'hi' ? '4 अंकों का PIN दर्ज करें' : 'Enter 4-Digit PIN'}
+          {lang === 'hi' ? '4 अंकों का PIN दर्ज करें' : lang === 'ta' ? '4 இலக்க ரகசிய எண்ணை உள்ளிடவும்' : 'Enter 4-Digit PIN'}
         </div>
 
         {/* 4 PIN Dots */}
@@ -423,7 +521,7 @@ export default function SignIn() {
         <button
           type="button"
           onClick={handleFingerprintScan}
-          disabled={lockCountdown > 0 || biometricState !== 'idle'}
+          disabled={lockCountdown > 0 || biometricState !== 'idle' || !isSupported}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -431,10 +529,23 @@ export default function SignIn() {
             gap: '10px',
             padding: '10px 20px',
             borderRadius: '24px',
-            backgroundColor: biometricState === 'verified' ? '#dcfce7' : '#ffffff',
-            border: biometricState === 'verified' ? '1.5px solid #16a34a' : '1.5px solid #bfdbfe',
+            backgroundColor: !isSupported
+              ? '#f1f5f9'
+              : biometricState === 'verified'
+              ? '#dcfce7'
+              : isEnrolled
+              ? '#ffffff'
+              : '#f8fafc',
+            border: !isSupported
+              ? '1.5px solid #cbd5e1'
+              : biometricState === 'verified'
+              ? '1.5px solid #16a34a'
+              : isEnrolled
+              ? '1.5px solid #bfdbfe'
+              : '1.5px solid #e2e8f0',
+            opacity: !isSupported ? 0.65 : 1,
             boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
-            cursor: lockCountdown > 0 ? 'not-allowed' : 'pointer',
+            cursor: (lockCountdown > 0 || !isSupported) ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
             position: 'relative',
             overflow: 'hidden',
@@ -448,7 +559,13 @@ export default function SignIn() {
               width: '32px',
               height: '32px',
               borderRadius: '50%',
-              backgroundColor: biometricState === 'verified' ? '#16a34a' : 'var(--brand)',
+              backgroundColor: !isSupported
+                ? '#94a3b8'
+                : biometricState === 'verified'
+                ? '#16a34a'
+                : isEnrolled
+                ? 'var(--brand)'
+                : '#64748b',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
@@ -483,13 +600,19 @@ export default function SignIn() {
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontWeight: 800, fontSize: '0.875rem', color: biometricState === 'verified' ? '#15803d' : 'var(--text-primary)' }}>
               {biometricState === 'scanning'
-                ? (lang === 'hi' ? 'बायोमेट्रिक स्कैन जारी...' : 'Scanning Biometric...')
+                ? (lang === 'hi' ? 'बायोमेट्रिक स्कैन जारी...' : lang === 'ta' ? 'கைரேகை ஸ்கேன் செய்யப்படுகிறது...' : 'Scanning Biometric...')
                 : biometricState === 'verified'
-                ? (lang === 'hi' ? 'सत्यापित!' : 'Fingerprint Verified!')
-                : (lang === 'hi' ? 'फिंगरप्रिंट से अनलॉक करें' : 'Unlock with Fingerprint')}
+                ? (lang === 'hi' ? 'सत्यापित!' : lang === 'ta' ? 'சரிபார்க்கப்பட்டது!' : 'Fingerprint Verified!')
+                : (lang === 'hi' ? 'फिंगरप्रिंट से अनलॉक करें' : lang === 'ta' ? 'கைரேகை மூலம் திறக்கவும்' : 'Unlock with Fingerprint')}
             </div>
             <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
-              {biometricState === 'verified' ? 'Logging in...' : '1-Tap instant biometrics'}
+              {!isSupported
+                ? (t('core.bio.notAvailable') || (lang === 'hi' ? 'इस डिवाइस पर उपलब्ध नहीं है' : lang === 'ta' ? 'இந்தச் சாதனத்தில் கிடைக்கவில்லை' : 'Not available on this device'))
+                : biometricState === 'verified'
+                ? (lang === 'hi' ? 'लॉग इन हो रहा है...' : lang === 'ta' ? 'உள்நுழைகிறது...' : 'Logging in...')
+                : isEnrolled
+                ? (t('core.bio.ready') || (lang === 'hi' ? '1-टैप त्वरित बायोमेट्रिक्स' : lang === 'ta' ? 'ஒரு தொடுதலில் கைரேகை' : '1-Tap instant biometrics'))
+                : (t('core.bio.needPin') || (lang === 'hi' ? 'चालू करने के लिए एक बार पिन से लॉगिन करें' : lang === 'ta' ? 'முதலில் ரகசிய எண் (PIN) மூலம் உள்நுழைந்து இயக்குங்கள்' : 'Log in with PIN once to turn on'))}
             </div>
           </div>
         </button>
@@ -552,7 +675,7 @@ export default function SignIn() {
           }}
           className="interactive-tap"
         >
-          {lang === 'hi' ? 'हटाएं' : 'Clear'}
+          {lang === 'hi' ? 'हटाएं' : lang === 'ta' ? 'அழி' : 'Clear'}
         </button>
 
         {/* 0 Digit */}
@@ -603,6 +726,22 @@ export default function SignIn() {
           ⌫
         </button>
       </div>
+
+      {/* 6. Biometric Post-PIN Enrollment Modal */}
+      <BiometricEnrollModal
+        isOpen={showEnrollModal}
+        profile={pendingCustomer || selectedCustomer}
+        lang={lang}
+        onClose={() => {
+          setShowEnrollModal(false);
+          processSignIn(pendingCustomer || selectedCustomer);
+        }}
+        onEnrolled={() => {
+          setShowEnrollModal(false);
+          setBioRev((r) => r + 1);
+          processSignIn(pendingCustomer || selectedCustomer);
+        }}
+      />
     </div>
   );
 }

@@ -170,8 +170,8 @@ export default function Header({
                     justifyContent: 'center',
                     borderRadius: '50%',
                   }}
-                  aria-label={lang === 'hi' ? 'QR कोड स्कैन करें' : 'Scan QR code'}
-                  title={lang === 'hi' ? 'QR कोड स्कैन करें' : 'Scan QR code'}
+                  aria-label={lang === 'hi' ? 'QR कोड स्कैन करें' : lang === 'ta' ? 'QR குறியீட்டை ஸ்கேன் செய்' : 'Scan QR code'}
+                  title={lang === 'hi' ? 'QR कोड स्कैन करें' : lang === 'ta' ? 'QR குறியீட்டை ஸ்கேன் செய்' : 'Scan QR code'}
                   className="interactive-tap hover:bg-slate-100"
                 >
                   <QrCodeIcon size={22} />
@@ -216,7 +216,7 @@ export default function Header({
                   justifyContent: 'center',
                   borderRadius: '50%',
                 }}
-                aria-label={lang === 'hi' ? 'उपभोक्ता प्रोफ़ाइल' : 'User Profile'}
+                aria-label={lang === 'hi' ? 'उपभोक्ता प्रोफ़ाइल' : lang === 'ta' ? 'பயனர் சுயவிவரம்' : 'User Profile'}
                 title={customerName}
                 className="interactive-tap hover:bg-slate-100"
               >

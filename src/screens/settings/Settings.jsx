@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Screen from '../../components/shell/Screen';
 import Card from '../../components/ui/Card';
@@ -8,9 +8,10 @@ import ListRow from '../../components/ui/ListRow';
 import BigButton from '../../components/ui/BigButton';
 import banks from '../../data/banks.js';
 import { getAllCustomers, getCustomer } from '../../data/customers.js';
-import { UserIcon, ChevronRightIcon } from '../../components/icons/Icons';
+import { ChevronRightIcon } from '../../components/icons/Icons';
 import { useStore } from '../../store/index.js';
 import { useI18n } from '../../i18n/index.js';
+import { hasFingerprint, removeFingerprint, enableFingerprint } from '../../biometric/index.js';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -20,6 +21,26 @@ export default function Settings() {
   const currentCustomerId = state.session.customerId || 'shankar';
   const allCustomers = getAllCustomers();
   const currentCustomer = getCustomer(currentCustomerId) || allCustomers[0];
+
+  const [bioEnabled, setBioEnabled] = useState(() => hasFingerprint(currentCustomerId));
+
+  useEffect(() => {
+    setBioEnabled(hasFingerprint(currentCustomerId));
+  }, [currentCustomerId]);
+
+  const handleToggleBio = async (val) => {
+    if (!val) {
+      removeFingerprint(currentCustomerId);
+      setBioEnabled(false);
+    } else {
+      try {
+        await enableFingerprint(currentCustomer);
+        setBioEnabled(true);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   const handleResetDemo = () => {
     if (window.confirm('Reset all demo data to initial state?')) {
@@ -63,7 +84,7 @@ export default function Settings() {
                 {currentCustomer.name?.[lang] || currentCustomer.name?.en}
               </div>
               <div style={{ fontSize: '0.8125rem', color: 'var(--brand)', fontWeight: 600 }}>
-                {lang === 'hi' ? 'प्रोफ़ाइल देखें, संपादित करें या नया जोड़ें' : 'View Profile, Edit Info & Add New Account'}
+                {lang === 'hi' ? 'प्रोफ़ाइल देखें, संपादित करें या नया जोड़ें' : lang === 'ta' ? 'சுயவிவரத்தைப் பார்க்கவும், விவரங்களை மாற்றவும்' : 'View Profile, Edit Info & Add New Account'}
               </div>
             </div>
           </div>
@@ -78,6 +99,7 @@ export default function Settings() {
           options={[
             { value: 'en', label: 'English' },
             { value: 'hi', label: 'हिन्दी (Hindi)' },
+            { value: 'ta', label: 'தமிழ் (Tamil)' },
           ]}
         />
       </Card>
@@ -178,6 +200,20 @@ export default function Settings() {
             );
           })}
         </div>
+      </Card>
+
+      {/* Biometric Unlock */}
+      <Card heading={lang === 'hi' ? 'फ़िंगरप्रिंट सुरक्षा' : lang === 'ta' ? 'கைரேகை பாதுகாப்பு' : 'Fingerprint Security'}>
+        <Toggle
+          checked={bioEnabled}
+          onChange={handleToggleBio}
+          label={lang === 'hi' ? '1-टैप फ़िंगरप्रिंट लॉगिन' : lang === 'ta' ? '1-தொடுதலில் கைரேகை உள்நுழைவு' : '1-Tap Fingerprint Login'}
+          description={
+            bioEnabled
+              ? (lang === 'hi' ? 'इस प्रोफ़ाइल के लिए सक्रिय है' : lang === 'ta' ? 'இந்த கணக்கிற்கு இயக்கப்பட்டுள்ளது' : 'Active for this profile')
+              : (lang === 'hi' ? 'त्वरित लॉगिन के लिए चालू करें' : lang === 'ta' ? 'உடனடி உள்நுழைவுக்கு இயக்கவும்' : 'Enable for quick 1-tap sign in')
+          }
+        />
       </Card>
 
       {/* Reset Demo Button */}

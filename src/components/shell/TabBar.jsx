@@ -13,11 +13,11 @@ export default function TabBar() {
   const { lang, t } = useI18n();
 
   const tabs = [
-    { to: '/', label: lang === 'hi' ? 'होम' : 'Home', icon: HomeIcon, end: true },
-    { to: '/accounts', label: lang === 'hi' ? 'खाते' : 'Accounts', icon: LandmarkIcon },
-    { to: '/cards', label: lang === 'hi' ? 'कार्ड्स' : 'Cards', icon: CreditCardIcon },
-    { to: '/history', label: lang === 'hi' ? 'इतिहास' : 'History', icon: ClockIcon },
-    { to: '/services', label: lang === 'hi' ? 'सेवाएं' : 'More', icon: GridIcon },
+    { to: '/', label: t('core.tab.home') || (lang === 'hi' ? 'होम' : lang === 'ta' ? 'முகப்பு' : 'Home'), icon: HomeIcon, end: true },
+    { to: '/accounts', label: lang === 'hi' ? 'खाते' : lang === 'ta' ? 'கணக்குகள்' : 'Accounts', icon: LandmarkIcon },
+    { to: '/cards', label: lang === 'hi' ? 'कार्ड्स' : lang === 'ta' ? 'கார்டுகள்' : 'Cards', icon: CreditCardIcon },
+    { to: '/history', label: t('core.tab.history') || (lang === 'hi' ? 'इतिहास' : lang === 'ta' ? 'வரலாறு' : 'History'), icon: ClockIcon },
+    { to: '/services', label: t('core.tab.services') || (lang === 'hi' ? 'सेवाएं' : lang === 'ta' ? 'சேவைகள்' : 'More'), icon: GridIcon },
   ];
 
   return (

@@ -175,9 +175,20 @@ export default function SplashScreen({ onStart, autoAdvance = true, durationMs =
             justifyContent: 'center',
             marginBottom: '20px',
             backdropFilter: 'blur(16px)',
+            overflow: 'hidden',
           }}
         >
-          <SaralLogo size={74} variant="color" />
+          <img
+            src="/salar.svg"
+            alt="Saral Bank Emblem"
+            style={{
+              width: '84px',
+              height: '84px',
+              borderRadius: '20px',
+              objectFit: 'contain',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+            }}
+          />
         </div>
 
         {/* Brand Name */}

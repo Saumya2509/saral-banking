@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="159 143 938 938" width="100%" height="100%" role="img" aria-label="Saral Banking icon: a blue letter S with a bank building in the middle">
+  <defs>
+    <linearGradient id="tile" x1="180" y1="1088" x2="1080" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#021c68"/>
+      <stop offset="0.6" stop-color="#022a78"/>
+      <stop offset="1" stop-color="#0561b4"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="1000" cy="200" r="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a8fe0" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#1a8fe0" stop-opacity="0"/>
+    </radialGradient>
+    <!-- upper half (also used rotated for the lower half) -->
+    <linearGradient id="face" x1="380" y1="420" x2="540" y2="690" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1fd0ff"/>
+      <stop offset="1" stop-color="#2a6bf0"/>
+    </linearGradient>
+    <linearGradient id="band" x1="900" y1="330" x2="560" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3ff0e8"/>
+      <stop offset="0.45" stop-color="#2ad0ff"/>
+      <stop offset="1" stop-color="#1f5ee8"/>
+    </linearGradient>
+    <linearGradient id="inner" x1="430" y1="330" x2="780" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2a63ee"/>
+      <stop offset="1" stop-color="#1b4fe0"/>
+    </linearGradient>
+    <!-- lower half colours -->
+    <linearGradient id="faceLow" x1="380" y1="330" x2="540" y2="690" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1f93ff"/>
+      <stop offset="1" stop-color="#2a5bec"/>
+    </linearGradient>
+    <linearGradient id="bandLow" x1="900" y1="330" x2="560" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c58bff"/>
+      <stop offset="0.5" stop-color="#7a63ff"/>
+      <stop offset="1" stop-color="#4a3cff"/>
+    </linearGradient>
+    <linearGradient id="innerLow" x1="430" y1="330" x2="780" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2a55e8"/>
+      <stop offset="1" stop-color="#1f45da"/>
+    </linearGradient>
+    <linearGradient id="bank" x1="0" y1="480" x2="0" y2="692" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#a6c6f4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- app tile -->
+  <rect x="176" y="150" width="904" height="938" rx="250" fill="url(#tile)" stroke="#0b3f9a" stroke-width="3"/>
+  <rect x="176" y="150" width="904" height="938" rx="250" fill="url(#glow)"/>
+
+  <!-- upper half of the S -->
+  <g id="top">
+    <!-- inner darker band -->
+    <path d="M545 318 C640 312 700 335 745 372 C770 392 790 440 820 466 L745 446 C690 392 610 330 545 318 Z" fill="url(#inner)"/>
+    <!-- light band with the pointed tip -->
+    <path d="M545 318 L740 308 C780 308 800 322 820 345 L902 452 C910 462 905 466 895 466 L820 466 C790 466 770 455 745 440 C680 390 610 330 545 318 Z" fill="url(#band)"/>
+    <!-- left face -->
+    <path d="M545 318 C430 340 362 420 362 515 C362 580 400 620 440 650 C480 680 510 688 533 690 C543 691 541 682 541 676 C548 640 555 610 535 580 C520 560 500 540 490 525 C490 520 492 515 488 510 C440 470 425 440 430 400 C435 360 480 325 545 318 Z" fill="url(#face)"/>
+  </g>
+
+  <!-- lower half of the S: same shape turned upside down -->
+  <g id="bottom" transform="rotate(180 628 612)">
+    <path d="M545 318 C640 312 700 335 745 372 C770 392 790 440 820 466 L745 446 C690 392 610 330 545 318 Z" fill="url(#innerLow)"/>
+    <path d="M545 318 L740 308 C780 308 800 322 820 345 L902 452 C910 462 905 466 895 466 L820 466 C790 466 770 455 745 440 C680 390 610 330 545 318 Z" fill="url(#bandLow)"/>
+    <path d="M545 318 C430 340 362 420 362 515 C362 580 400 620 440 650 C480 680 510 688 533 690 C543 691 541 682 541 676 C548 640 555 610 535 580 C520 560 500 540 490 525 C490 520 492 515 488 510 C440 470 425 440 430 400 C435 360 480 325 545 318 Z" fill="url(#faceLow)"/>
+  </g>
+
+  <!-- bank building -->
+  <g fill="url(#bank)">
+    <path d="M650 480 L735 530 Q752 541 738 547 L562 547 Q548 541 565 530 Z"/>
+    <rect x="575" y="562" width="35" height="86" rx="7"/>
+    <rect x="631" y="562" width="35" height="86" rx="7"/>
+    <rect x="690" y="562" width="35" height="86" rx="7"/>
+    <rect x="554" y="663" width="191" height="28" rx="12"/>
+  </g>
+</svg>

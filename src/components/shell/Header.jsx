@@ -91,23 +91,20 @@ export default function Header({
               <span>{t('core.btn.back') || 'Back'}</span>
             </button>
           ) : isHome ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <img
+                src="/salar.svg"
+                alt="Saral Bank Logo"
                 style={{
-                  width: '30px',
-                  height: '30px',
-                  borderRadius: '9px',
-                  backgroundColor: 'var(--brand)',
-                  color: 'var(--brand-contrast)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 10px rgba(18, 59, 103, 0.2)',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(18, 59, 103, 0.25)',
+                  objectFit: 'contain',
+                  flexShrink: 0,
                 }}
-              >
-                <SaralMarkIcon size={18} />
-              </span>
-              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--brand)' }}>
+              />
+              <span style={{ fontWeight: 800, fontSize: '1.0625rem', color: 'var(--brand)', letterSpacing: '-0.02em' }}>
                 {bank.name[lang] || bank.name.en}
               </span>
             </div>

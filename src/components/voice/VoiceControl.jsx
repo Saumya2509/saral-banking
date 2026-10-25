@@ -326,33 +326,54 @@ export default function VoiceControl({ isOpen, onClose }) {
     const cleanText = text.trim();
     const lower = cleanText.toLowerCase();
 
-    // ── STRICT SECURITY GUARD: BLOCK PIN VIA VOICE ────────────────────────
-    const fourDigitRegex = /\b\d{4}\b/;
-    if (lower.includes('pin') || fourDigitRegex.test(lower)) {
+    // ── STRICT SECURITY GUARD: BLOCK PIN / PASSWORD VIA VOICE ────────────────
+    // Only triggers when user explicitly speaks "pin", "password", "passcode", etc.
+    const hasPinOrPassword =
+      /\b(pin|password|passcode|secret\s*pin)\b/i.test(lower) ||
+      lower.includes('पिन') ||
+      lower.includes('पासवर्ड') ||
+      lower.includes('ரகசிய எண்') ||
+      lower.includes('கடவுச்சொல்');
+
+    if (hasPinOrPassword) {
       setVoiceState('pin_blocked');
       const warningText =
         lang === 'hi'
-          ? 'सुरक्षा चेतावनी! अपना पिन कभी बोलकर न बताएं। आपकी सुरक्षा के लिए वॉइस द्वारा पिन दर्ज करना वर्जित है। कृपया स्क्रीन पर कीपैड का उपयोग करें।'
-          : 'Security Alert! Never speak your secret PIN aloud. For your protection, voice PIN entry is disabled. Please enter your PIN on the keypad.';
+          ? 'सुरक्षा चेतावनी! अपना पिन या पासवर्ड कभी बोलकर न बताएं। आपकी सुरक्षा के लिए वॉइस द्वारा पिन दर्ज करना वर्जित है। कृपया स्क्रीन पर कीपैड का उपयोग करें।'
+          : lang === 'ta'
+          ? 'பாதுகாப்பு எச்சரிக்கை! உங்கள் ரகசிய எண் (PIN) அல்லது கடவுச்சொல்லை ஒருபோதும் வாய்விட்டுச் சொல்ல வேண்டாம். திரையில் உள்ள விசைப்பலகையைப் பயன்படுத்தவும்.'
+          : 'Security Alert! Never speak your secret PIN or password aloud. For your protection, voice PIN entry is disabled. Please enter your PIN on the keypad.';
 
       setFeedbackMessage(warningText);
       speak(warningText, lang);
       return;
     }
 
-    // ── 1. BALANCE INQUIRY — Requires PIN for security ─────────────────
-    if (
-      lower.includes('balance') ||
-      lower.includes('money') ||
-      lower.includes('बैलेंस') ||
-      lower.includes('रुपये') ||
-      lower.includes('कितना') ||
-      lower.includes('पैसे')
-    ) {
+    // ── 1. BALANCE INQUIRY ───────────────────────────────────────────────
+    // Only triggers for genuine balance inquiries, NOT payment commands!
+    const isPaymentCommand =
+      lower.includes('pay') ||
+      lower.includes('send') ||
+      lower.includes('transfer') ||
+      lower.includes('भेज') ||
+      lower.includes('पे') ||
+      lower.includes('अனுப்பு') ||
+      lower.includes('செலுத்து');
+
+    const isBalanceInquiry =
+      !isPaymentCommand &&
+      (lower.includes('balance') ||
+        lower.includes('बैलेंस') ||
+        lower.includes('இருப்பு') ||
+        ((lower.includes('how much') || lower.includes('कितना') || lower.includes('எவ்வளவு')) && !cleanText.match(/\d+/)));
+
+    if (isBalanceInquiry) {
       const reply =
         lang === 'hi'
-          ? 'सुरक्षा कारणों से, बैलेंस जानने के लिए कृपया होम स्क्रीन पर अपना PIN दर्ज करें। आपको होम पेज पर ले जा रहा हूँ।'
-          : 'For security, balance check requires PIN verification. Taking you to the home screen — please enter your PIN there.';
+          ? 'बैलेंस देखने के लिए होम स्क्रीन पर ले जा रहा हूँ।'
+          : lang === 'ta'
+          ? 'இருப்புத் தொகையைக் காண முகப்புத் திரைக்கு அழைத்துச் செல்கிறேன்.'
+          : 'Taking you to the home screen to view your balance.';
 
       setVoiceState('speaking');
       setFeedbackMessage(reply);
@@ -360,7 +381,7 @@ export default function VoiceControl({ isOpen, onClose }) {
       setTimeout(() => {
         onClose();
         navigate('/');
-      }, 2000);
+      }, 1500);
       return;
     }
 
@@ -393,11 +414,12 @@ export default function VoiceControl({ isOpen, onClose }) {
       if (toMatch && toMatch[1]) {
         const extracted = toMatch[1].replace(/\b(rupees|rs|paisa|money|please|send|pay|transfer)\b/gi, '').trim();
         if (extracted) {
+          const displayName = extracted.toLowerCase() === 'this' ? 'Selected Payee' : extracted;
           matchedMember = {
             id: `payee_${Date.now()}`,
-            name: extracted,
+            name: displayName,
             bank: 'UPI Transfer',
-            accountNumber: `${extracted.toLowerCase().replace(/[^a-z0-9]/g, '')}@upi`,
+            accountNumber: `${displayName.toLowerCase().replace(/[^a-z0-9]/g, '')}@upi`,
           };
         }
       }
@@ -457,6 +479,28 @@ export default function VoiceControl({ isOpen, onClose }) {
       setVoiceState('speaking');
       setFeedbackMessage(reply);
       speak(reply, lang);
+      return;
+    }
+
+    if (!matchedMember && amountNumber > 0 && isPaymentCommand) {
+      const confirmSpeech =
+        lang === 'hi'
+          ? `${amountNumber} रुपये भेजने के लिए स्क्रीन खोली जा रही है।`
+          : `Opening payment screen for ${amountNumber} rupees.`;
+
+      setVoiceState('speaking');
+      setFeedbackMessage(confirmSpeech);
+      speak(confirmSpeech, lang);
+      playSuccessChime();
+
+      setTimeout(() => {
+        onClose();
+        navigate('/pay/send', {
+          state: {
+            amountPaise: amountNumber * 100,
+          },
+        });
+      }, 1500);
       return;
     }
 

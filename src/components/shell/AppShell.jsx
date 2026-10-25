@@ -28,8 +28,13 @@ export default function AppShell() {
 
   // Check login session
   useEffect(() => {
-    if (!state?.session?.customerId && location.pathname !== '/signin') {
-      navigate('/signin', { replace: true });
+    if (!state?.session?.customerId && location.pathname !== '/signin' && location.pathname !== '/splash') {
+      const hasSeenSplash = sessionStorage.getItem('saral_has_seen_splash');
+      if (!hasSeenSplash) {
+        navigate('/splash', { replace: true });
+      } else {
+        navigate('/signin', { replace: true });
+      }
     }
   }, [state?.session?.customerId, location.pathname, navigate]);
 
@@ -60,6 +65,10 @@ export default function AppShell() {
   }, [state?.session?.customerId, dispatch, navigate]);
 
   if (!state?.session?.customerId) {
+    const hasSeenSplash = typeof window !== 'undefined' && sessionStorage.getItem('saral_has_seen_splash');
+    if (!hasSeenSplash) {
+      return <Navigate to="/splash" replace />;
+    }
     return <Navigate to="/signin" replace />;
   }
 

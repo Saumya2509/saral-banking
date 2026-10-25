@@ -4,6 +4,15 @@ import express from 'express';
 import { handleChat } from './chatCore.js';
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 app.use(express.json({ limit: '20kb' }));
 
 // simple per-IP limit: 20 requests / minute
@@ -21,7 +30,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 app.use(express.static('dist'));
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });

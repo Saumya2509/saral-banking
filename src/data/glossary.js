@@ -469,7 +469,7 @@ const glossary = [
       hi: 'बैंक में एक सुरक्षित खाता जहाँ आपके पैसे पर ब्याज मिलता है और जब चाहें पैसा निकाला जा सकता है।',
       ta: 'உங்கள் பணம் பாதுகாப்பாக இருக்கவும் வட்டி பெறவும் உதவும் வங்கிக் கணக்கு.',
     },
-  },,
+  },
   {
     id: 'lakh',
     match: {
@@ -570,3 +570,4 @@ export function findTermsByText(text, lang = 'en') {
 
 export const GLOSSARY = glossary;
 export default glossary;
+

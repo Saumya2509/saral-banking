@@ -14,7 +14,7 @@ function clean(s, limit) {
 
 // Returns { status, body }
 export async function handleChat(payload) {
-  const key = process.env.GEMINI_API_KEY;
+  const key = process.env.GEMINI_API_KEY || process.env.GEMINI || process.env.Gemini;
   if (!key) return { status: 500, body: { error: 'server_not_configured' } };
 
   // ---- validate

@@ -52,7 +52,7 @@ function chatDevApiPlugin() {
 export default defineConfig({
   plugins: [react(), tailwindcss(), chatDevApiPlugin()],
   define: {
-    __GEMINI_KEY__: JSON.stringify(process.env.GEMINI_API_KEY || ''),
+    __GEMINI_KEY__: JSON.stringify(process.env.GEMINI_API_KEY || process.env.GEMINI || process.env.Gemini || ''),
     __GEMINI_MODEL__: JSON.stringify(process.env.GEMINI_MODEL || 'gemini-3.5-flash'),
   },
   server: {

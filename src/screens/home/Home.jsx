@@ -36,6 +36,7 @@ import banks from '../../data/banks.js';
 import { useStore } from '../../store/index.js';
 import { useI18n } from '../../i18n/index.js';
 import { amountToSpeech, formatINR } from '../../utils/money.js';
+import { speak } from '../../utils/speech.js';
 import { playSuccessChime, playTapTone } from '../../utils/audio.js';
 
 export default function Home() {
@@ -241,7 +242,13 @@ export default function Home() {
     setTimeout(() => setFamilyToast(''), 3000);
   };
 
-  const balanceSpoken = amountToSpeech(balances.totalPaise, lang);
+  const balanceSpoken =
+    lang === 'ta'
+      ? `இருப்புத் தொகை: ${amountToSpeech(balances.totalPaise, 'ta')}`
+      : lang === 'hi'
+      ? `उपलब्ध शेष राशि: ${amountToSpeech(balances.totalPaise, 'hi')}`
+      : `Available balance: ${amountToSpeech(balances.totalPaise, 'en')}`;
+
   const customerName = customer?.name?.[lang] || customer?.name?.en || 'Customer';
   const initial = (customerName || 'U').charAt(0).toUpperCase();
 
@@ -253,6 +260,17 @@ export default function Home() {
       : currentHour < 17
       ? (lang === 'hi' ? 'शुभ दोपहर' : lang === 'ta' ? 'மதிய வணக்கம்' : 'Good Afternoon')
       : (lang === 'hi' ? 'शुभ संध्या' : lang === 'ta' ? 'மாலை வணக்கம்' : 'Good Evening');
+
+  // Auto read-aloud in Tamil for Shankar Prasad (Simple Mode) when Tamil is selected
+  React.useEffect(() => {
+    if ((isSimple || customerId === 'shankar') && lang === 'ta') {
+      const speech = `${greeting} ${customerName}. இருப்புத் தொகை: ${amountToSpeech(balances.totalPaise, 'ta')}.`;
+      const timer = setTimeout(() => {
+        speak(speech, 'ta');
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [lang, customerId, isSimple]);
 
   return (
     <Screen showBack={false}>
@@ -303,42 +321,92 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Notification Bell with alert dot if there are pending family requests */}
-        <button
-          type="button"
-          onClick={() => setIsNotificationsOpen(true)}
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--surface)',
-            border: '1px solid var(--border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-primary)',
-            position: 'relative',
-            cursor: 'pointer',
-          }}
-          className="interactive-tap hover:bg-slate-100"
-          aria-label="Notifications"
-        >
-          <BellIcon size={20} />
-          {(pendingAaravRequests.length > 0 || customerId === 'priya') && (
-            <span
-              style={{
-                position: 'absolute',
-                top: '8px',
-                right: '9px',
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#ef4444',
-                border: '1.5px solid #ffffff',
-              }}
-            />
-          )}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Quick Language Toggle with Spoken Confirmation */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '2px',
+              backgroundColor: 'var(--surface-alt, #f1f5f9)',
+              padding: '2px',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+            }}
+          >
+            {[
+              { code: 'en', label: 'EN' },
+              { code: 'hi', label: 'हि' },
+              { code: 'ta', label: 'தமிழ்' },
+            ].map(({ code, label }) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => {
+                  dispatch({ type: 'SET_LANG', payload: code });
+                  if (code === 'ta') {
+                    speak(`வணக்கம் ${customerName}. தமிழ் தேர்ந்தெடுக்கப்பட்டது. இருப்புத் தொகை: ${amountToSpeech(balances.totalPaise, 'ta')}`, 'ta');
+                  } else if (code === 'hi') {
+                    speak(`नमस्ते ${customerName}. हिंदी चुनी गई। उपलब्ध शेष राशि: ${amountToSpeech(balances.totalPaise, 'hi')}`, 'hi');
+                  } else {
+                    speak(`Hello ${customerName}. English selected. Available balance: ${amountToSpeech(balances.totalPaise, 'en')}`, 'en');
+                  }
+                }}
+                style={{
+                  padding: '3px 8px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: lang === code ? 'var(--brand)' : 'transparent',
+                  color: lang === code ? '#ffffff' : 'var(--text-muted)',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+                className="interactive-tap"
+                title={`Switch to ${label}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Notification Bell with alert dot if there are pending family requests */}
+          <button
+            type="button"
+            onClick={() => setIsNotificationsOpen(true)}
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--surface)',
+              border: '1px solid var(--border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-primary)',
+              position: 'relative',
+              cursor: 'pointer',
+            }}
+            className="interactive-tap hover:bg-slate-100"
+            aria-label="Notifications"
+          >
+            <BellIcon size={20} />
+            {(pendingAaravRequests.length > 0 || customerId === 'priya') && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '8px',
+                  right: '9px',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#ef4444',
+                  border: '1.5px solid #ffffff',
+                }}
+              />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* FAMILY SUCCESS TOAST BANNER */}
@@ -710,6 +778,9 @@ export default function Home() {
             variant="primary"
             onClick={() => {
               if (hideBalanceLocal) toggleHideBalance();
+              if (lang === 'ta') {
+                speak(`உங்கள் கணக்கு இருப்புத் தொகை: ${amountToSpeech(balances.totalPaise, 'ta')}`, 'ta');
+              }
             }}
           >
             {t('core.home.simple.seeMoney') || 'See my money'}

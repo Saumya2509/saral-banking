@@ -12,6 +12,7 @@ import { useStore } from '../../store/index.js';
 import { useI18n } from '../../i18n/index.js';
 import { playSuccessChime, playErrorTone, playTapTone } from '../../utils/audio.js';
 import { checkPin } from '../../auth.js';
+import { speak } from '../../utils/speech.js';
 import {
   fingerprintSupported,
   hasFingerprint,
@@ -325,7 +326,10 @@ export default function SignIn() {
           </button>
           <button
             type="button"
-            onClick={() => dispatch({ type: 'SET_LANG', payload: 'ta' })}
+            onClick={() => {
+              dispatch({ type: 'SET_LANG', payload: 'ta' });
+              speak('தமிழ் தேர்ந்தெடுக்கப்பட்டது', 'ta');
+            }}
             style={{
               padding: '3px 10px',
               borderRadius: '8px',

@@ -12,6 +12,9 @@ import { ChevronRightIcon } from '../../components/icons/Icons';
 import { useStore } from '../../store/index.js';
 import { useI18n } from '../../i18n/index.js';
 import { hasFingerprint, removeFingerprint, enableFingerprint } from '../../biometric/index.js';
+import { speak } from '../../utils/speech.js';
+import { amountToSpeech } from '../../utils/money.js';
+import { getBalances } from '../../utils/ledger.js';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -95,7 +98,17 @@ export default function Settings() {
       <Card heading={t('core.settings.language') || 'Language'}>
         <Segmented
           value={state.settings.lang}
-          onChange={(val) => dispatch({ type: 'SET_LANG', payload: val })}
+          onChange={(val) => {
+            dispatch({ type: 'SET_LANG', payload: val });
+            const b = getBalances(currentCustomerId);
+            if (val === 'ta') {
+              speak(`தமிழ் மொழி தேர்ந்தெடுக்கப்பட்டது. இருப்புத் தொகை: ${amountToSpeech(b.totalPaise, 'ta')}`, 'ta');
+            } else if (val === 'hi') {
+              speak(`हिंदी भाषा चुनी गई। उपलब्ध शेष राशि: ${amountToSpeech(b.totalPaise, 'hi')}`, 'hi');
+            } else {
+              speak(`English language selected. Available balance: ${amountToSpeech(b.totalPaise, 'en')}`, 'en');
+            }
+          }}
           options={[
             { value: 'en', label: 'English' },
             { value: 'hi', label: 'हिन्दी (Hindi)' },

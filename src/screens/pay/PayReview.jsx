@@ -49,7 +49,9 @@ export default function PayReview() {
 
   const spokenAmount = amountToSpeech(amountPaise, lang);
   const reviewSpeechText =
-    lang === 'hi'
+    lang === 'ta'
+      ? `பணம் செலுத்துதல் சரிபார்ப்பு. நீங்கள் ${payee.name} என்பவருக்கு ${spokenAmount} அனுப்புகிறீர்கள். உங்கள் கணக்கின் கடைசி நான்கு எண்கள் ${customer.accountNumber.slice(-4)}.`
+      : lang === 'hi'
       ? `भुगतान समीक्षा। आप ${payee.name} को ${spokenAmount} भेज रहे हैं। आपके खाते के अंतिम चार अंक ${customer.accountNumber.slice(-4)} हैं।`
       : `Payment review. You are sending ${spokenAmount} to ${payee.name} from account ending in ${customer.accountNumber.slice(-4)}.`;
 

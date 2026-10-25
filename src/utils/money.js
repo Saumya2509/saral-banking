@@ -1,6 +1,8 @@
 // Saral Banking — Money Utilities
 // All amounts are integers in paise. No float arithmetic.
 
+import { amountToTamilSpeech, toTamilWords } from '../i18n/tamilNumber.js';
+
 const HINDI_NUMBERS = [
   'शून्य', 'एक', 'दो', 'तीन', 'चार', 'पाँच', 'छह', 'सात', 'आठ', 'नौ', 'दस',
   'ग्यारह', 'बारह', 'तेरह', 'चौदह', 'पंद्रह', 'सोलह', 'सत्रह', 'अठारह', 'उन्नीस', 'बीस',
@@ -178,18 +180,23 @@ export function rupeesToPaise(input) {
 }
 
 /**
- * Converts paise to a spoken description in English or Hindi for screen readers.
- * Handles lakhs, thousands, hundreds and paise.
+ * Converts paise to a spoken description in English, Hindi, or Tamil for screen readers.
+ * Handles crores, lakhs, thousands, hundreds and paise.
  * e.g. 10000000, 'en' -> 'one lakh rupees'
  *      10000000, 'hi' -> 'एक लाख रुपये'
+ *      10000000, 'ta' -> 'ஒரு லட்சம் ரூபாய்'
  *      800050, 'en' -> 'eight thousand rupees and fifty paise'
  * @param {number} paise - Integer paise
- * @param {string} [lang='en'] - 'en' or 'hi'
+ * @param {string} [lang='en'] - 'en', 'hi', or 'ta'
  * @returns {string} Text-to-speech string
  */
 export function amountToSpeech(paise, lang = 'en') {
+  const normalizedLang = (lang || 'en').toLowerCase().trim();
+  const isTamil = normalizedLang === 'ta' || normalizedLang.startsWith('ta');
+  const isHindi = normalizedLang === 'hi' || normalizedLang.startsWith('hi');
+
   if (paise === null || paise === undefined || Number.isNaN(paise)) {
-    return lang === 'hi' ? 'शून्य रुपये' : 'zero rupees';
+    return isHindi ? 'शून्य रुपये' : isTamil ? 'பூஜ்ஜியம் ரூபாய்' : 'zero rupees';
   }
 
   const isNegative = paise < 0;
@@ -197,7 +204,24 @@ export function amountToSpeech(paise, lang = 'en') {
   const rupees = Math.floor(absPaise / 100);
   const paiseRemaining = absPaise % 100;
 
-  if (lang === 'hi') {
+  // Tamil
+  if (isTamil) {
+    if (rupees === 0 && paiseRemaining === 0) {
+      return 'பூஜ்ஜியம் ரூபாய்';
+    }
+    let result = '';
+    if (rupees > 0) {
+      result = amountToTamilSpeech(rupees);
+    }
+    if (paiseRemaining > 0) {
+      const paiseWords = `${toTamilWords(paiseRemaining)} பைசா`;
+      result = result ? `${result} ${paiseWords}` : paiseWords;
+    }
+    return isNegative ? `மைனஸ் ${result}` : result;
+  }
+
+  // Hindi
+  if (isHindi) {
     let result = '';
     if (rupees === 0 && paiseRemaining === 0) {
       return 'शून्य रुपये';

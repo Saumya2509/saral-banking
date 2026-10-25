@@ -37,7 +37,9 @@ export default function PayPin() {
   // Announce security warning on mount for screen readers & blind users
   useEffect(() => {
     const speechText =
-      lang === 'hi'
+      lang === 'ta'
+        ? `பின் உள்ளீட்டு திரை. உங்கள் பாதுகாப்பிற்காக, பின்னை வாய்விட்டுச் சொல்ல வேண்டாம். திரையில் உங்கள் 4 இலக்க பின்னை உள்ளிடவும்.`
+        : lang === 'hi'
         ? `पिन स्क्रीन। अपनी सुरक्षा के लिए, पिन बोलकर न बताएं। कृपया स्क्रीन पर अपना 4 अंकों का पिन दर्ज करें।`
         : `PIN entry screen. For your security, please enter your 4-digit PIN on the screen.`;
 
@@ -89,9 +91,14 @@ export default function PayPin() {
           : `Daily UPI limit exceeded! You've spent ${formatINR(todaySpent)} today. Limit is ${formatINR(upiDailyLimit)}. Remaining: ${formatINR(remaining)}`;
         setError(limitMsg);
         if (state.settings.readAloud) {
-          speak(lang === 'hi'
-            ? 'दैनिक UPI सीमा पार हो गई। कृपया राशि कम करें या कल प्रयास करें।'
-            : 'Daily UPI limit exceeded. Please reduce the amount or try again tomorrow.', lang);
+          speak(
+            lang === 'ta'
+              ? 'தினசரி UPI வரம்பை தாண்டியது. தொகையைக் குறைக்கவும் அல்லது நாளை மீண்டும் முயற்சிக்கவும்.'
+              : lang === 'hi'
+              ? 'दैनिक UPI सीमा पार हो गई। कृपया राशि कम करें या कल प्रयास करें।'
+              : 'Daily UPI limit exceeded. Please reduce the amount or try again tomorrow.',
+            lang
+          );
         }
         return;
       }
@@ -144,7 +151,9 @@ export default function PayPin() {
         // Only announce name & amount — NO reference number in voice
         playSuccessChime();
         const successSpeech =
-          lang === 'hi'
+          lang === 'ta'
+            ? `${payee.name}க்கு ${amountToSpeech(amountPaise, 'ta')} செலுத்தியது வெற்றிகரமானது.`
+            : lang === 'hi'
             ? `${payee.name} को ${amountToSpeech(amountPaise, 'hi')} का भुगतान सफल रहा।`
             : `Payment of ${amountToSpeech(amountPaise, 'en')} to ${payee.name} was successful.`;
         speak(successSpeech, lang);
@@ -160,7 +169,14 @@ export default function PayPin() {
       playErrorTone();
       setError(t('core.signin.wrongPin') || `Wrong PIN. Demo PIN is ${config.demoPin}`);
       if (state.settings.readAloud) {
-        speak('Incorrect PIN. Please try again.', lang);
+        speak(
+          lang === 'ta'
+            ? 'தவறான பின். மீண்டும் முயற்சிக்கவும்.'
+            : lang === 'hi'
+            ? 'गलत पिन। कृपया पुनः प्रयास करें।'
+            : 'Incorrect PIN. Please try again.',
+          lang
+        );
       }
     }
   };

@@ -44,6 +44,7 @@ export function useReadAloud() {
  * ReadAloud button component
  */
 export default function ReadAloud({ text, label = null, className = '', style = {} }) {
+  const { lang } = useI18n();
   const { readAloud, stopReading, isReading } = useReadAloud();
 
   const handleToggle = () => {
@@ -54,11 +55,19 @@ export default function ReadAloud({ text, label = null, className = '', style = 
     }
   };
 
+  const defaultLabel =
+    lang === 'ta'
+      ? 'உரக்கப் படிக்கவும்'
+      : lang === 'hi'
+      ? 'बोलकर सुनाएं'
+      : 'Read aloud';
+
   return (
     <button
       type="button"
       onClick={handleToggle}
-      aria-label={label || 'Read aloud'}
+      aria-label={label || defaultLabel}
+      title={label || defaultLabel}
       style={{
         display: 'inline-flex',
         alignItems: 'center',

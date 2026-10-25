@@ -249,10 +249,10 @@ export default function Home() {
   const currentHour = new Date().getHours();
   const greeting =
     currentHour < 12
-      ? (lang === 'hi' ? 'शुभ प्रभात' : 'Good Morning')
+      ? (lang === 'hi' ? 'शुभ प्रभात' : lang === 'ta' ? 'காலை வணக்கம்' : 'Good Morning')
       : currentHour < 17
-      ? (lang === 'hi' ? 'शुभ दोपहर' : 'Good Afternoon')
-      : (lang === 'hi' ? 'शुभ संध्या' : 'Good Evening');
+      ? (lang === 'hi' ? 'शुभ दोपहर' : lang === 'ta' ? 'மதிய வணக்கம்' : 'Good Afternoon')
+      : (lang === 'hi' ? 'शुभ संध्या' : lang === 'ta' ? 'மாலை வணக்கம்' : 'Good Evening');
 
   return (
     <Screen showBack={false}>
@@ -540,7 +540,7 @@ export default function Home() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
-              {lang === 'hi' ? 'बचत खाता' : 'Savings Account'}
+              {lang === 'hi' ? 'बचत खाता' : lang === 'ta' ? 'சேமிப்புக் கணக்கு' : 'Savings Account'}
             </span>
             <span style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace' }}>
               {maskAccountNumber(customer.accountNumber || '2048 1023 4589')}
@@ -576,7 +576,7 @@ export default function Home() {
         {/* Balance Display */}
         <div style={{ marginBottom: '20px' }}>
           <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            {lang === 'hi' ? 'उपलब्ध शेष राशि' : 'Available Balance'}
+            {lang === 'hi' ? 'उपलब्ध शेष राशि' : lang === 'ta' ? 'இருப்புத் தொகை' : 'Available Balance'}
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.5px', marginTop: '2px' }}>
             {hideBalanceLocal ? '••••••••' : formatINR(balances.totalPaise)}
@@ -719,7 +719,7 @@ export default function Home() {
             variant="primary"
             onClick={() => setIsQrOpen(true)}
           >
-            {lang === 'hi' ? '📷 QR कोड स्कैन करें' : '📷 Scan QR code'}
+            {lang === 'hi' ? '📷 QR कोड स्कैन करें' : lang === 'ta' ? '📷 QR குறியீட்டை ஸ்கேன் செய்க' : '📷 Scan QR code'}
           </BigButton>
 
           <BigButton
@@ -1089,12 +1089,12 @@ export default function Home() {
                   {lang === 'hi' ? 'वॉइस बैंकिंग सहायक' : 'Voice Banking Assistant'}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {lang === 'hi' ? 'बोलें: "रमेश को 500 रुपये भेजो"' : 'Say: "Pay 500 to Ramesh" or "Check balance"'}
+                  {lang === 'hi' ? 'बोलें: "रमेश को 500 रुपये भेजो"' : lang === 'ta' ? 'கூறுங்கள்: "ரமேஷிற்கு 500 ரூபாய் அனுப்புக"' : 'Say: "Pay 500 to Ramesh" or "Check balance"'}
                 </div>
               </div>
             </div>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--brand)' }}>
-              {lang === 'hi' ? 'बोलें →' : 'Speak →'}
+              {lang === 'hi' ? 'बोलें →' : lang === 'ta' ? 'பேசுக →' : 'Speak →'}
             </span>
           </div>
 

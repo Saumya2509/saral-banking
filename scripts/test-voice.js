@@ -5,6 +5,8 @@ import { SYSTEM_PROMPT } from '../server/systemPrompt.js';
 import { handleChat } from '../server/chatCore.js';
 import { keywordAnswer } from '../src/utils/chat.js';
 import { toTamilWords, amountToTamilSpeech } from '../src/i18n/tamilNumber.js';
+import { amountToSpeech } from '../src/utils/money.js';
+import { findVoice } from '../src/utils/speech.js';
 
 console.log('--- Starting voice.md Verification Tests ---');
 
@@ -142,6 +144,11 @@ console.log('--- Starting voice.md Verification Tests ---');
   assert.strictEqual(amountToTamilSpeech(250000), 'இரண்டு லட்சத்து ஐம்பதாயிரம் ரூபாய்');
   assert.strictEqual(amountToTamilSpeech(10000000), 'ஒரு கோடி ரூபாய்');
   assert.strictEqual(toTamilWords(500), 'ஐந்நூறு');
+  assert.strictEqual(amountToSpeech(15000000, 'ta'), 'ஒரு லட்சத்து ஐம்பதாயிரம் ரூபாய்');
+  assert.strictEqual(amountToSpeech(10000000, 'ta'), 'ஒரு லட்சம் ரூபாய்');
+  assert.strictEqual(amountToSpeech(50000, 'ta'), 'ஐந்நூறு ரூபாய்');
+  assert.strictEqual(amountToSpeech(0, 'ta'), 'பூஜ்ஜியம் ரூபாய்');
+  console.log('✓ Shankar Prasad opening balance in Tamil verified');
   console.log('✓ Tamil currency words matching Section 7 passed for all milestones');
 }
 
